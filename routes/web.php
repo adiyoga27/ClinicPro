@@ -68,6 +68,7 @@ Route::prefix('doctor')
     ->name('doctor.')
     ->group(function () {
         Route::get('/dashboard', Doctor\Dashboard::class)->name('dashboard');
+        Route::get('/queues', Doctor\QueueList::class)->name('queues');
         Route::get('/examination/{queue}', Doctor\PatientExamination::class)->name('examination');
     });
 

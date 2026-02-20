@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('icd10_codes', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('name_id');
+            $table->string('name_id')->nullable();
             $table->string('name_en');
             $table->timestamps();
         });

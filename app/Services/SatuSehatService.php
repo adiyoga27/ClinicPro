@@ -73,7 +73,7 @@ class SatuSehatService
             return ['success' => false, 'error' => 'No access token available'];
         }
 
-        $url = $this->baseUrl . '/fhir-r4/v1/' . $resourceType;
+        $url = $this->baseUrl . '/fhir-r4/v1' . ($resourceType ? '/' . $resourceType : '');
 
         $response = Http::withToken($token)
             ->withHeaders(['Content-Type' => 'application/fhir+json'])
@@ -295,13 +295,18 @@ class SatuSehatService
     /**
      * Build FHIR Encounter resource from local medical record.
      */
-    public function buildEncounterResource($medicalRecord): array
+    public function buildEncounterResource($medicalRecord, array $conditionUuids = []): array
     {
         $medicalRecord->loadMissing('diagnoses.icd10Code');
         $diagnoses = [];
         foreach ($medicalRecord->diagnoses as $idx => $diagnosis) {
+            $reference = isset($conditionUuids[$diagnosis->id])
+                ? 'urn:uuid:' . $conditionUuids[$diagnosis->id]
+                : 'urn:uuid:' . (string) \Illuminate\Support\Str::uuid();
+
             $diagnoses[] = [
                 'condition' => [
+                    'reference' => $reference,
                     'display' => $diagnosis->icd10Code->name_en ?? 'Diagnosis'
                 ],
                 'use' => [
@@ -392,7 +397,7 @@ class SatuSehatService
     /**
      * Build FHIR Condition (Diagnosis) resource.
      */
-    public function buildConditionResource($diagnosis, string $encounterId): array
+    public function buildConditionResource($diagnosis, string $encounterReference): array
     {
         return [
             'resourceType' => 'Condition',
@@ -429,7 +434,7 @@ class SatuSehatService
                 'reference' => 'Patient/' . ($diagnosis->medicalRecord->patient->satu_sehat_id ?? ''),
             ],
             'encounter' => [
-                'reference' => 'Encounter/' . $encounterId,
+                'reference' => str_starts_with($encounterReference, 'urn:uuid:') ? $encounterReference : 'Encounter/' . $encounterReference,
             ],
         ];
     }
@@ -479,49 +484,79 @@ class SatuSehatService
             $results['patient'] = $patientResult;
         }
 
-        // 2. Sync Encounter
-        $encounterPayload = $this->buildEncounterResource($medicalRecord);
-        $encounterResult = $this->sendResource('Encounter', $encounterPayload);
+        // 2. Build Bundle for Encounter & Conditions
+        $encounterUuid = (string) \Illuminate\Support\Str::uuid();
+        $conditionUuids = [];
+        $medicalRecord->loadMissing('diagnoses.icd10Code');
+        
+        foreach ($medicalRecord->diagnoses as $diagnosis) {
+            $conditionUuids[$diagnosis->id] = (string) \Illuminate\Support\Str::uuid();
+        }
+
+        $bundle = [
+            'resourceType' => 'Bundle',
+            'type' => 'transaction',
+            'entry' => []
+        ];
+
+        // Encounter Entry
+        $encounterPayload = $this->buildEncounterResource($medicalRecord, $conditionUuids);
+        $bundle['entry'][] = [
+            'fullUrl' => 'urn:uuid:' . $encounterUuid,
+            'resource' => $encounterPayload,
+            'request' => [
+                'method' => 'POST',
+                'url' => 'Encounter'
+            ]
+        ];
+
+        // Condition Entries
+        foreach ($medicalRecord->diagnoses as $diagnosis) {
+            $conditionId = $conditionUuids[$diagnosis->id];
+            $conditionPayload = $this->buildConditionResource($diagnosis, 'urn:uuid:' . $encounterUuid);
+            $bundle['entry'][] = [
+                'fullUrl' => 'urn:uuid:' . $conditionId,
+                'resource' => $conditionPayload,
+                'request' => [
+                    'method' => 'POST',
+                    'url' => 'Condition'
+                ]
+            ];
+        }
+
+        // 3. Send Bundle
+        $bundleResult = $this->sendResource('', $bundle); // Empty string for base URL /fhir-r4/v1
 
         \App\Models\SatuSehatLog::create([
             'clinic_id' => $medicalRecord->clinic_id,
             'medical_record_id' => $medicalRecord->id,
-            'resource_type' => 'Encounter',
-            'payload' => $encounterPayload,
-            'response' => $encounterResult['data'] ?? ($encounterResult['error'] ?? []),
-            'status' => $encounterResult['success'] ? 'success' : 'failed',
+            'resource_type' => 'Bundle',
+            'payload' => $bundle,
+            'response' => $bundleResult['data'] ?? ($bundleResult['error'] ?? []),
+            'status' => $bundleResult['success'] ? 'success' : 'failed',
             'last_attempted_at' => now(),
-            'error_message' => $encounterResult['success'] ? null : ($encounterResult['error'] ?? 'Unknown error'),
+            'error_message' => $bundleResult['success'] ? null : ($bundleResult['error'] ?? 'Unknown error'),
         ]);
 
-        $encounterId = null;
-        if ($encounterResult['success'] && isset($encounterResult['data']['id'])) {
-            $encounterId = $encounterResult['data']['id'];
-            $medicalRecord->update(['satu_sehat_encounter_id' => $encounterId]);
-        }
-        $results['encounter'] = $encounterResult;
-
-        // 3. Sync Conditions (Diagnoses)
-        if ($encounterId) {
-            $medicalRecord->load('diagnoses.icd10Code');
-            foreach ($medicalRecord->diagnoses as $diagnosis) {
-                $conditionPayload = $this->buildConditionResource($diagnosis, $encounterId);
-                $conditionResult = $this->sendResource('Condition', $conditionPayload);
-
-                \App\Models\SatuSehatLog::create([
-                    'clinic_id' => $medicalRecord->clinic_id,
-                    'medical_record_id' => $medicalRecord->id,
-                    'resource_type' => 'Condition',
-                    'payload' => $conditionPayload,
-                    'response' => $conditionResult['data'] ?? ($conditionResult['error'] ?? []),
-                    'status' => $conditionResult['success'] ? 'success' : 'failed',
-                    'last_attempted_at' => now(),
-                    'error_message' => $conditionResult['success'] ? null : ($conditionResult['error'] ?? 'Unknown error'),
-                ]);
-
-                $results['conditions'][] = $conditionResult;
+        if ($bundleResult['success'] && isset($bundleResult['data']['entry'])) {
+            // Find Encounter ID from response
+            $encounterId = null;
+            foreach ($bundleResult['data']['entry'] as $entry) {
+                if (isset($entry['response']['location']) && str_contains($entry['response']['location'], 'Encounter/')) {
+                    // Location usually looks like: Encounter/ac46ecbd-efbc-496a-a1cc-a34db5dedcc6/_history/1
+                    preg_match('/Encounter\/([A-Za-z0-9\-]+)/', $entry['response']['location'], $matches);
+                    if (!empty($matches[1])) {
+                        $encounterId = $matches[1];
+                        break;
+                    }
+                }
+            }
+            if ($encounterId) {
+                $medicalRecord->update(['satu_sehat_encounter_id' => $encounterId]);
             }
         }
+        
+        $results['bundle'] = $bundleResult;
 
         return $results;
     }

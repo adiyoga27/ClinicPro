@@ -22,7 +22,7 @@
                 
                 <form wire:submit="addToQueue" class="space-y-4 overflow-visible">
                     @php
-                        $patientOptions = $patients->map(fn($p) => ['value' => $p->id, 'label' => $p->name . ($p->nik ? " - {$p->nik}" : '')])->toArray();
+                        $patientOptions = $patients->map(fn($p) => ['value' => $p->id, 'label' => $p->name . ($p->nik ? " - {$p->nik}" : '') . ($p->satu_sehat_id ? ' (✓ Satu Sehat)' : '')])->toArray();
                         $doctorOptions = $doctors->map(fn($d) => ['value' => $d->id, 'label' => $d->name])->toArray();
                         $roomOptions = $rooms->map(fn($r) => ['value' => $r->id, 'label' => $r->name])->toArray();
                     @endphp

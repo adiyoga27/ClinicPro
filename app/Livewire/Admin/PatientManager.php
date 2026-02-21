@@ -78,7 +78,7 @@ class PatientManager extends Component
         $this->showForm = true;
     }
 
-    public function save(): void
+    public function save(\App\Services\SatuSehatService $satuSehatService): void
     {
         $this->validate();
 
@@ -100,15 +100,29 @@ class PatientManager extends Component
         }
 
         if ($this->editingId) {
-            Patient::findOrFail($this->editingId)->update($data);
-            session()->flash('success', 'Pasien berhasil diperbarui.');
+            $patient = Patient::findOrFail($this->editingId);
+            $patient->update($data);
+            $message = 'Pasien berhasil diperbarui.';
         } else {
-            Patient::create($data);
-            session()->flash('success', 'Pasien berhasil ditambahkan.');
+            $patient = Patient::create($data);
+            $message = 'Pasien berhasil ditambahkan.';
+        }
+
+        if (!empty($patient->nik)) {
+            if (empty($patient->satu_sehat_patient_id) || $patient->wasChanged('nik')) {
+                $result = $satuSehatService->getPatientByNik($patient->nik);
+                if ($result['success'] && isset($result['data']['id'])) {
+                    $patient->update(['satu_sehat_patient_id' => $result['data']['id']]);
+                    $message .= ' ID Satu Sehat berhasil tersinkron otomatis.';
+                } else {
+                    $message .= ' Namun gagal sinkron Satu Sehat (NIK tidak ditemukan).';
+                }
+            }
         }
 
         $this->showForm = false;
         $this->reset(['editingId', 'name', 'nik', 'medical_record_no', 'birth_date', 'gender', 'phone', 'address', 'blood_type', 'mother_name', 'mother_nik', 'photo', 'existingPhoto']);
+        session()->flash('success', $message);
     }
 
     public array $syncLogs = [];
@@ -146,12 +160,15 @@ class PatientManager extends Component
 
         if ($result['success']) {
             $entries = $result['data']['entry'] ?? [];
-            $count = 0;
+            $countNew = 0;
+            $countUpdated = 0;
+            $countSkipped = 0;
 
             foreach ($entries as $entry) {
                 $resource = $entry['resource'] ?? null;
                 if ($resource && isset($resource['id'])) {
                     $existingPatient = Patient::where('satu_sehat_patient_id', $resource['id'])->first();
+                    $name = $resource['name'][0]['text'] ?? ($resource['name'][0]['given'][0] ?? 'Unknown Patient');
                     
                     if (!$existingPatient) {
                         // Try to get NIK
@@ -164,15 +181,13 @@ class PatientManager extends Component
                             }
                         }
 
-                        $name = $resource['name'][0]['text'] ?? ($resource['name'][0]['given'][0] ?? 'Unknown Patient');
-
                         // Check if NIK exists
                         if ($nik) {
                             $patientByNik = Patient::where('nik', $nik)->first();
                             if ($patientByNik) {
                                 // Just update the ID
                                 $patientByNik->update(['satu_sehat_patient_id' => $resource['id']]);
-                                $count++;
+                                $countUpdated++;
                                 $this->syncLogs[] = [
                                     'status' => 'success',
                                     'message' => "Update ID Satu Sehat untuk Pasien $name (NIK: $nik)"
@@ -204,6 +219,7 @@ class PatientManager extends Component
                         }
 
                         Patient::create([
+                            'clinic_id' => auth()->user()->clinic_id,
                             'satu_sehat_patient_id' => $resource['id'],
                             'nik' => $nik ?: null,
                             'name' => $name,
@@ -212,21 +228,27 @@ class PatientManager extends Component
                             'address' => $addressStr ?: null,
                             'phone' => $phone ?: null,
                         ]);
-                        $count++;
+                        $countNew++;
                         $this->syncLogs[] = [
                             'status' => 'success',
                             'message' => "Berhasil menarik data Pasien Baru: $name"
+                        ];
+                    } else {
+                        $countSkipped++;
+                        $this->syncLogs[] = [
+                            'status' => 'success',
+                            'message' => "Pasien $name sudah tersinkron dan up-to-date"
                         ];
                     }
                 }
             }
 
-            if ($count > 0) {
-                $this->showSyncLogs = true;
-                session()->flash('success', "Proses penarikan selesai. Menarik $count pasien dari Satu Sehat.");
-            } else {
-                session()->flash('success', "Semua pasien dari Satu Sehat sudah ada di sistem (up-to-date).");
+            $this->showSyncLogs = true;
+            $msg = "Proses penarikan selesai. $countNew Pasien Baru ditarik, $countUpdated Pasien Diperbarui.";
+            if ($countSkipped > 0) {
+                $msg .= " ($countSkipped pasien sudah up-to-date).";
             }
+            session()->flash('success', $msg);
         } else {
             session()->flash('error', 'Gagal menarik data pasien: ' . ($result['error'] ?? 'Terjadi kesalahan.'));
         }

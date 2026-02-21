@@ -41,7 +41,7 @@ class StaffManager extends Component
         $this->showForm = true;
     }
 
-    public function save(): void
+    public function save(\App\Services\SatuSehatService $satuSehatService): void
     {
         $rules = [
             'name' => 'required|string|max:255',
@@ -87,6 +87,18 @@ class StaffManager extends Component
         }
 
         $user->syncRoles($this->selectedRoles);
+
+        if (in_array('doctor', $this->selectedRoles) && !empty($user->nik)) {
+            if (empty($user->satusehat_id) || $user->wasChanged('nik')) {
+                $result = $satuSehatService->getPractitionerByNik($user->nik);
+                if ($result['success'] && isset($result['data']['id'])) {
+                    $user->update(['satusehat_id' => $result['data']['id']]);
+                    $message .= ' ID Satu Sehat berhasil disinkronisasi.';
+                } else {
+                    $message .= ' Namun gagal sinkronisasi Satu Sehat (NIK tidak ditemukan).';
+                }
+            }
+        }
 
         $this->showForm = false;
         $this->reset(['editingId', 'name', 'email', 'password', 'phone', 'nik', 'selectedRoles']);

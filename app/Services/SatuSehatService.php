@@ -18,9 +18,19 @@ class SatuSehatService
     {
         $this->baseUrl = config('satu_sehat.base_url');
         $this->authUrl = config('satu_sehat.auth_url');
-        $this->clientId = config('satu_sehat.client_id', '');
-        $this->clientSecret = config('satu_sehat.client_secret', '');
-        $this->organizationId = config('satu_sehat.organization_id', '');
+        
+        // Fetch credentials from the current clinic if authenticated, 
+        // fallback to config (even though it's empty) for safety.
+        $clinic = auth()->check() ? auth()->user()->clinic : null;
+        
+        $this->clientId = $clinic?->satusehat_client_id ?? config('satu_sehat.client_id', '');
+        $this->clientSecret = $clinic?->satusehat_client_secret ?? config('satu_sehat.client_secret', '');
+        $this->organizationId = $clinic?->satusehat_organization_id ?? config('satu_sehat.organization_id', '');
+    }
+
+    public function getOrganizationId(): string
+    {
+        return $this->organizationId;
     }
 
     /**
@@ -85,6 +95,112 @@ class SatuSehatService
     }
 
     /**
+     * Get Practitioner by NIK
+     */
+    public function getPractitionerByNik(string $nik): array
+    {
+        $token = $this->getAccessToken();
+
+        if (!$token) {
+            return ['success' => false, 'error' => 'No access token available'];
+        }
+
+        $url = $this->baseUrl . '/fhir-r4/v1/Practitioner?identifier=https://fhir.kemkes.go.id/id/nik|' . $nik;
+
+        $response = Http::withToken($token)->get($url);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $entries = $data['entry'] ?? [];
+            
+            if (count($entries) > 0) {
+                // Return the first practitioner found
+                return [
+                    'success' => true,
+                    'data' => $entries[0]['resource'],
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'error' => 'Practitioner tidak ditemukan untuk NIK tersebut.',
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $response->body(),
+        ];
+    }
+
+    /**
+     * Get Patient by NIK
+     */
+    public function getPatientByNik(string $nik): array
+    {
+        $token = $this->getAccessToken();
+
+        if (!$token) {
+            return ['success' => false, 'error' => 'No access token available'];
+        }
+
+        $url = $this->baseUrl . '/fhir-r4/v1/Patient?identifier=https://fhir.kemkes.go.id/id/nik|' . $nik;
+
+        $response = Http::withToken($token)->get($url);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $entries = $data['entry'] ?? [];
+            
+            if (count($entries) > 0) {
+                // Return the first patient found
+                return [
+                    'success' => true,
+                    'data' => $entries[0]['resource'],
+                ];
+            }
+            
+            return [
+                'success' => false,
+                'error' => 'Patient tidak ditemukan untuk NIK tersebut.',
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $response->body(),
+        ];
+    }
+
+    /**
+     * Get Locations by Organization ID
+     */
+    public function getLocations(): array
+    {
+        $token = $this->getAccessToken();
+
+        if (!$token) {
+            return ['success' => false, 'error' => 'No access token available'];
+        }
+
+        $url = $this->baseUrl . '/fhir-r4/v1/Location?organization=' . $this->organizationId;
+
+        $response = Http::withToken($token)->get($url);
+
+        if ($response->successful()) {
+            return [
+                'success' => true,
+                'data' => $response->json(),
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $response->body(),
+        ];
+    }
+
+    /**
      * Build FHIR Patient resource from local patient model.
      */
     public function buildPatientResource($patient): array
@@ -145,6 +261,14 @@ class SatuSehatService
             ],
             'serviceProvider' => [
                 'reference' => 'Organization/' . $this->organizationId,
+            ],
+            'location' => [
+                [
+                    'location' => [
+                        'reference' => 'Location/' . ($medicalRecord->queue->room->satusehat_id ?? ''),
+                        'display' => $medicalRecord->queue->room->name ?? 'Ruangan',
+                    ],
+                ],
             ],
         ];
     }

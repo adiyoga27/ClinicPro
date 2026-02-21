@@ -43,6 +43,13 @@
                             class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                     </div>
                     <div>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">NIK (KTP)</label>
+                        <p class="text-xs text-surface-500 mb-2">Diperlukan untuk sinkronisasi Profil Tenaga Kesehatan ke Satu Sehat.</p>
+                        <input wire:model="nik" type="text" maxlength="16" placeholder="16 Digit NIK"
+                            class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
+                        @error('nik') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
+                    </div>
+                    <div>
                         <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">Role *</label>
                         @error('selectedRoles') <p class="text-xs text-danger-500 mb-2">{{ $message }}</p> @enderror
                         <div class="flex flex-wrap gap-3">
@@ -137,7 +144,27 @@
                 <tbody class="divide-y divide-surface-100 dark:divide-white/5">
                     @forelse($users as $member)
                         <tr class="hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors group">
-                            <td class="px-6 py-4 text-sm text-surface-900 dark:text-surface-200 font-medium whitespace-nowrap">{{ $member->name }}</td>
+                            <td class="px-6 py-4">
+                                <p class="text-sm text-surface-900 dark:text-surface-200 font-medium whitespace-nowrap">{{ $member->name }}</p>
+                                @if($member->hasRole('doctor'))
+                                    <div class="mt-1 flex flex-col gap-1">
+                                        <p class="text-xs text-surface-500 font-mono">NIK: {{ $member->nik ?: '-' }}</p>
+                                        @if($member->satusehat_id)
+                                            <span class="inline-flex w-fit items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-success-50 dark:bg-success-500/10 text-success-600 dark:text-success-400 border border-success-200 dark:border-success-500/20">
+                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                Satu Sehat: {{ $member->satusehat_id }}
+                                            </span>
+                                        @else
+                                            <button wire:click="syncSatuSehat({{ $member->id }})" wire:loading.attr="disabled"
+                                                class="inline-flex w-fit items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 border border-surface-200 dark:border-white/10 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-colors disabled:opacity-50">
+                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                                <span wire:loading.remove wire:target="syncSatuSehat({{ $member->id }})">Sinkron NIK Satu Sehat</span>
+                                                <span wire:loading wire:target="syncSatuSehat({{ $member->id }})">Loading...</span>
+                                            </button>
+                                        @endif
+                                    </div>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-sm text-surface-500 dark:text-surface-400">{{ $member->email }}</td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-wrap gap-1.5">

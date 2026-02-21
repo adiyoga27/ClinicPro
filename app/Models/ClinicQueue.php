@@ -17,6 +17,7 @@ class ClinicQueue extends Model
         'clinic_id',
         'patient_id',
         'doctor_id',
+        'room_id',
         'appointment_id',
         'queue_no',
         'date',
@@ -37,6 +38,11 @@ class ClinicQueue extends Model
     public function doctor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'doctor_id');
+    }
+
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class, 'room_id');
     }
 
     public function appointment(): BelongsTo

@@ -66,8 +66,10 @@ Route::prefix('admin')
         Route::get('/staff', Admin\StaffManager::class)->name('staff');
         Route::get('/medicines', Admin\MedicineManager::class)->name('medicines');
         Route::get('/services', Admin\ServiceManager::class)->name('services');
+        Route::get('/rooms', Admin\RoomManager::class)->name('rooms');
         Route::get('/deposit', Admin\DepositManager::class)->name('deposit');
         Route::get('/subscription', Admin\SubscriptionManager::class)->name('subscription');
+        Route::get('/satusehat', Admin\SatuSehatSettings::class)->name('satusehat');
     });
 
 // ============================================

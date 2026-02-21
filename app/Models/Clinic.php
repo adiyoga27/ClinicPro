@@ -21,6 +21,9 @@ class Clinic extends Model
         'logo',
         'status',
         'doctor_fee',
+        'satusehat_client_id',
+        'satusehat_client_secret',
+        'satusehat_organization_id',
     ];
 
     protected static function booted(): void

@@ -19,6 +19,8 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
+        'nik',
+        'satusehat_id',
         'avatar',
         'theme',
         'is_active',

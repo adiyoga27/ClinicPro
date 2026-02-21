@@ -13,6 +13,7 @@ class StaffManager extends Component
     public string $email = '';
     public string $password = '';
     public string $phone = '';
+    public string $nik = '';
     public array $selectedRoles = [];
     public bool $showForm = false;
     public ?int $editingId = null;
@@ -23,7 +24,7 @@ class StaffManager extends Component
 
     public function create(): void
     {
-        $this->reset(['name', 'email', 'password', 'phone', 'selectedRoles', 'editingId']);
+        $this->reset(['name', 'email', 'password', 'phone', 'nik', 'selectedRoles', 'editingId']);
         $this->showForm = true;
     }
 
@@ -34,11 +35,13 @@ class StaffManager extends Component
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'phone' => 'nullable|string|max:20',
+            'nik' => 'nullable|digits:16',
             'selectedRoles' => 'required|array|min:1',
             'selectedRoles.*' => 'in:admin,doctor,cashier',
         ], [
             'selectedRoles.required' => 'Pilih minimal satu role.',
             'selectedRoles.min' => 'Pilih minimal satu role.',
+            'nik.digits' => 'NIK harus 16 digit angka.',
         ]);
 
         $user = User::create([
@@ -47,14 +50,34 @@ class StaffManager extends Component
             'email' => $this->email,
             'password' => $this->password,
             'phone' => $this->phone ?: null,
+            'nik' => $this->nik ?: null,
             'is_active' => true,
         ]);
 
         $user->syncRoles($this->selectedRoles);
 
         $this->showForm = false;
-        $this->reset(['name', 'email', 'password', 'phone', 'selectedRoles']);
+        $this->reset(['name', 'email', 'password', 'phone', 'nik', 'selectedRoles']);
         session()->flash('success', 'Staf berhasil ditambahkan.');
+    }
+
+    public function syncSatuSehat(int $id, \App\Services\SatuSehatService $satuSehatService)
+    {
+        $user = User::findOrFail($id);
+        
+        if (empty($user->nik)) {
+            session()->flash('error', 'Staf ini belum memiliki NIK. Pembaharuan data dokter di DTO Kemenkes membutuhkan NIK.');
+            return;
+        }
+
+        $result = $satuSehatService->getPractitionerByNik($user->nik);
+
+        if ($result['success'] && isset($result['data']['id'])) {
+            $user->update(['satusehat_id' => $result['data']['id']]);
+            session()->flash('success', 'Berhasil melakukan sinkronisasi dengan Satu Sehat (ID: ' . $user->satusehat_id . ').');
+        } else {
+            session()->flash('error', 'Gagal sinkronisasi: ' . ($result['error'] ?? 'Data tidak ditemukan di SISDMK/Satu Sehat.'));
+        }
     }
 
     public function openRoleModal(int $id): void

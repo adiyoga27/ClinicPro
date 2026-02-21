@@ -111,6 +111,25 @@ class PatientManager extends Component
         $this->reset(['editingId', 'name', 'nik', 'medical_record_no', 'birth_date', 'gender', 'phone', 'address', 'blood_type', 'mother_name', 'mother_nik', 'photo', 'existingPhoto']);
     }
 
+    public function syncSatuSehat(int $id, \App\Services\SatuSehatService $satuSehatService): void
+    {
+        $patient = Patient::findOrFail($id);
+        
+        if (empty($patient->nik)) {
+            session()->flash('error', 'Pasien ini belum memiliki NIK. Sinkronisasi identitas ke Satu Sehat membutuhkan NIK.');
+            return;
+        }
+
+        $result = $satuSehatService->getPatientByNik($patient->nik);
+
+        if ($result['success'] && isset($result['data']['id'])) {
+            $patient->update(['satu_sehat_patient_id' => $result['data']['id']]);
+            session()->flash('success', 'Berhasil melakukan sinkronisasi dengan Satu Sehat (ID: ' . $patient->satu_sehat_patient_id . ').');
+        } else {
+            session()->flash('error', 'Gagal sinkronisasi: ' . ($result['error'] ?? 'Data tidak ditemukan di database Kependudukan Kemendagri / Satu Sehat.'));
+        }
+    }
+
     public function delete(int $id): void
     {
         Patient::findOrFail($id)->delete();

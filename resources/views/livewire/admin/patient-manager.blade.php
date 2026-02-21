@@ -179,7 +179,26 @@
                                     <div class="text-sm text-surface-900 dark:text-surface-200 font-medium">{{ $patient->name }}</div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-surface-600 dark:text-surface-400">{{ $patient->nik ?? '-' }}</td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="text-sm text-surface-600 dark:text-surface-400">{{ $patient->nik ?? '-' }}</span>
+                                    @if($patient->nik)
+                                        @if($patient->satu_sehat_patient_id)
+                                            <span class="inline-flex w-fit items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-success-50 dark:bg-success-500/10 text-success-600 dark:text-success-400 border border-success-200 dark:border-success-500/20">
+                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                Satu Sehat: {{ $patient->satu_sehat_patient_id }}
+                                            </span>
+                                        @else
+                                            <button wire:click="syncSatuSehat({{ $patient->id }})" wire:loading.attr="disabled"
+                                                class="inline-flex w-fit items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 border border-surface-200 dark:border-white/10 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-colors disabled:opacity-50">
+                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                                <span wire:loading.remove wire:target="syncSatuSehat({{ $patient->id }})">Sinkron NIK</span>
+                                                <span wire:loading wire:target="syncSatuSehat({{ $patient->id }})">Loading...</span>
+                                            </button>
+                                        @endif
+                                    @endif
+                                </div>
+                            </td>
                             <td class="px-6 py-4 text-sm text-surface-600 dark:text-surface-400">{{ $patient->medical_record_no ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-surface-600 dark:text-surface-400">{{ $patient->phone ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-surface-600 dark:text-surface-400">

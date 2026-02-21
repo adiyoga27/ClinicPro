@@ -75,7 +75,7 @@
                 <!-- Modal Header -->
                 <div class="p-6 border-b border-surface-200 dark:border-white/5 flex items-center justify-between bg-surface-50 dark:bg-transparent">
                     <div>
-                        <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100">Kelola Deposit</h3>
+                        <h3 class="text-xl font-bold text-surface-900 dark:text-white">Kelola Deposit</h3>
                         <p class="text-sm font-medium text-surface-600 dark:text-surface-500">{{ $selectedPatient->name }} (RM: {{ $selectedPatient->medical_record_no }})</p>
                     </div>
                     <button wire:click="$set('showModal', false)" class="text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-white transition-colors bg-white dark:bg-transparent p-1 rounded-lg border border-surface-200 dark:border-transparent">

@@ -86,7 +86,7 @@
                                 d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
-                    <h1 class="text-lg font-semibold text-surface-900 dark:text-surface-200">{{ $header ?? '' }}</h1>
+                    <h1 class="text-lg font-semibold text-surface-900 dark:text-white">{{ $header ?? '' }}</h1>
                 </div>
                 <div class="flex items-center gap-2">
                     {{ $actions ?? '' }}

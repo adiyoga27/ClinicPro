@@ -80,7 +80,7 @@
     </div>
 
     {{-- Renewal Section --}}
-    <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-4">Perpanjang Langganan</h3>
+    <h3 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Perpanjang Langganan</h3>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         @foreach($durationOptions as $key => $option)
@@ -140,7 +140,7 @@
                                 d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100">Pembayaran</h3>
+                    <h3 class="text-xl font-bold text-surface-900 dark:text-white">Pembayaran</h3>
                     <p class="text-sm font-medium text-surface-600 dark:text-surface-400 mt-1">Klik tombol di bawah untuk membuka halaman pembayaran Midtrans</p>
                 </div>
 

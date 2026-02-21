@@ -110,7 +110,7 @@
                                 </div>
                             @endif
                         </div>
-                        <h2 class="text-xl font-bold text-surface-900 dark:text-surface-100">{{ $selectedPatient->name }}</h2>
+                        <h2 class="text-xl font-bold text-surface-900 dark:text-white">{{ $selectedPatient->name }}</h2>
                         <p class="text-primary-600 dark:text-primary-400 text-sm font-bold mt-1">No. RM: {{ $selectedPatient->medical_record_no }}</p>
                     </div>
 

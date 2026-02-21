@@ -24,7 +24,7 @@
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
             wire:click.self="$set('showForm', false)">
             <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-2xl p-6 lg:p-8 w-full max-w-md shadow-xl dark:shadow-2xl">
-                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-6">
+                <h3 class="text-xl font-bold text-surface-900 dark:text-white mb-6">
                     {{ $editingId ? 'Edit Ruangan' : 'Tambah Ruangan Baru' }}
                 </h3>
                 <form wire:submit="save" class="space-y-4">

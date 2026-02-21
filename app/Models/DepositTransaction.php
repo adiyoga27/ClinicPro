@@ -7,28 +7,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Payment extends Model
+class DepositTransaction extends Model
 {
     use HasFactory, BelongsToClinic;
 
     protected $fillable = [
-        'billing_id',
+        'patient_id',
         'clinic_id',
-        'payment_method',
+        'user_id',
         'amount',
-        'midtrans_order_id',
-        'midtrans_transaction_id',
-        'status',
-        'paid_at',
+        'type',
+        'description',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'paid_at' => 'datetime',
     ];
 
-    public function billing(): BelongsTo
+    public function patient(): BelongsTo
     {
-        return $this->belongsTo(Billing::class);
+        return $this->belongsTo(Patient::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

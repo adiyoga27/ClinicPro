@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MidtransController;
+use App\Http\Controllers\ThemeController;
 use App\Livewire\Admin;
 use App\Livewire\Auth;
 use App\Livewire\Cashier;
@@ -27,6 +28,13 @@ Route::post('/logout', function () {
 Route::get('/subscription/expired', function () {
     return view('subscription.expired');
 })->middleware('auth')->name('subscription.expired');
+
+// ============================================
+// THEME TOGGLE ROUTE
+// ============================================
+Route::post('/theme/toggle', [ThemeController::class, 'toggle'])
+    ->middleware('auth')
+    ->name('theme.toggle');
 
 // ============================================
 // MIDTRANS WEBHOOK (no CSRF)
@@ -57,6 +65,7 @@ Route::prefix('admin')
         Route::get('/queues', Admin\QueueManager::class)->name('queues');
         Route::get('/staff', Admin\StaffManager::class)->name('staff');
         Route::get('/medicines', Admin\MedicineManager::class)->name('medicines');
+        Route::get('/deposit', Admin\DepositManager::class)->name('deposit');
         Route::get('/subscription', Admin\SubscriptionManager::class)->name('subscription');
     });
 
@@ -70,6 +79,7 @@ Route::prefix('doctor')
         Route::get('/dashboard', Doctor\Dashboard::class)->name('dashboard');
         Route::get('/queues', Doctor\QueueList::class)->name('queues');
         Route::get('/examination/{queue}', Doctor\PatientExamination::class)->name('examination');
+        Route::get('/patients', Doctor\PatientHistory::class)->name('patients');
     });
 
 // ============================================
@@ -80,6 +90,8 @@ Route::prefix('cashier')
     ->name('cashier.')
     ->group(function () {
         Route::get('/dashboard', Cashier\Dashboard::class)->name('dashboard');
+        Route::get('/billing', Cashier\BillingManager::class)->name('billing');
+        Route::get('/deposit', Admin\DepositManager::class)->name('deposit');
     });
 
 // ============================================

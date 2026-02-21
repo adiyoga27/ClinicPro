@@ -6,11 +6,12 @@ use App\Models\Patient;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 
 #[Layout('layouts.app')]
 class PatientManager extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public string $search = '';
     public bool $showForm = false;
@@ -25,6 +26,10 @@ class PatientManager extends Component
     public string $phone = '';
     public string $address = '';
     public string $blood_type = '';
+    public string $mother_name = '';
+    public string $mother_nik = '';
+    public $photo; // For new upload
+    public ?string $existingPhoto = null;
 
     protected function rules(): array
     {
@@ -37,6 +42,9 @@ class PatientManager extends Component
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'blood_type' => 'nullable|in:A,B,AB,O',
+            'mother_name' => 'nullable|string|max:255',
+            'mother_nik' => 'nullable|digits:16',
+            'photo' => 'nullable|image|max:2048', // 2MB max
         ];
     }
 
@@ -47,7 +55,7 @@ class PatientManager extends Component
 
     public function create(): void
     {
-        $this->reset(['editingId', 'name', 'nik', 'medical_record_no', 'birth_date', 'gender', 'phone', 'address', 'blood_type']);
+        $this->reset(['editingId', 'name', 'nik', 'medical_record_no', 'birth_date', 'gender', 'phone', 'address', 'blood_type', 'mother_name', 'mother_nik', 'photo', 'existingPhoto']);
         $this->showForm = true;
     }
 
@@ -63,6 +71,10 @@ class PatientManager extends Component
         $this->phone = $patient->phone ?? '';
         $this->address = $patient->address ?? '';
         $this->blood_type = $patient->blood_type ?? '';
+        $this->mother_name = $patient->mother_name ?? '';
+        $this->mother_nik = $patient->mother_nik ?? '';
+        $this->existingPhoto = $patient->photo_path;
+        $this->photo = null;
         $this->showForm = true;
     }
 
@@ -79,7 +91,13 @@ class PatientManager extends Component
             'phone' => $this->phone ?: null,
             'address' => $this->address ?: null,
             'blood_type' => $this->blood_type ?: null,
+            'mother_name' => $this->mother_name ?: null,
+            'mother_nik' => $this->mother_nik ?: null,
         ];
+
+        if ($this->photo) {
+            $data['photo_path'] = $this->photo->store('patients', 'public');
+        }
 
         if ($this->editingId) {
             Patient::findOrFail($this->editingId)->update($data);
@@ -90,7 +108,7 @@ class PatientManager extends Component
         }
 
         $this->showForm = false;
-        $this->reset(['editingId', 'name', 'nik', 'medical_record_no', 'birth_date', 'gender', 'phone', 'address', 'blood_type']);
+        $this->reset(['editingId', 'name', 'nik', 'medical_record_no', 'birth_date', 'gender', 'phone', 'address', 'blood_type', 'mother_name', 'mother_nik', 'photo', 'existingPhoto']);
     }
 
     public function delete(int $id): void

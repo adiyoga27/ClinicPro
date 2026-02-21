@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="{{ (!auth()->check() || auth()->user()->theme === 'dark') ? 'dark' : '' }}">
 
 <head>
     <meta charset="utf-8">
@@ -14,7 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-surface-950 text-surface-100 font-sans antialiased">
+<body class="bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-100 font-sans antialiased">
     {{ $slot }}
 </body>
 

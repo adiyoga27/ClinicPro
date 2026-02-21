@@ -41,9 +41,9 @@ class Billing extends Model
         return $this->hasMany(BillingItem::class);
     }
 
-    public function payment(): HasOne
+    public function payments(): HasMany
     {
-        return $this->hasOne(Payment::class);
+        return $this->hasMany(Payment::class);
     }
 
     public function recalculate(): void

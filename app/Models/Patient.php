@@ -21,16 +21,26 @@ class Patient extends Model
         'address',
         'phone',
         'blood_type',
+        'photo_path',
+        'mother_name',
+        'mother_nik',
+        'deposit_balance',
         'satu_sehat_patient_id',
     ];
 
     protected $casts = [
         'birth_date' => 'date',
+        'deposit_balance' => 'decimal:2',
     ];
 
     public function medicalRecords(): HasMany
     {
         return $this->hasMany(MedicalRecord::class);
+    }
+
+    public function depositTransactions(): HasMany
+    {
+        return $this->hasMany(DepositTransaction::class);
     }
 
     public function appointments(): HasMany

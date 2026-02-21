@@ -31,6 +31,40 @@
                 <h3 class="text-xl font-bold text-surface-100 mb-6">{{ $editingId ? 'Edit Pasien' : 'Tambah Pasien Baru' }}
                 </h3>
                 <form wire:submit="save" class="space-y-4">
+                    <!-- Photo Upload -->
+                    <div class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-white/10 rounded-2xl bg-surface-800/30">
+                        <div class="relative group">
+                            <div class="w-24 h-24 rounded-full overflow-hidden bg-surface-700 border-2 border-primary-500/20">
+                                @if ($photo)
+                                    <img src="{{ $photo->temporaryUrl() }}" class="w-full h-full object-cover">
+                                @elseif ($existingPhoto)
+                                    <img src="{{ asset('storage/' . $existingPhoto) }}" class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center text-surface-500">
+                                        <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                @endif
+                                <div wire:loading wire:target="photo" class="absolute inset-0 bg-black/40 flex items-center justify-center">
+                                    <svg class="animate-spin h-6 w-6 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <label class="absolute bottom-0 right-0 p-1.5 bg-primary-600 rounded-full cursor-pointer shadow-lg hover:scale-110 transition-transform">
+                                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <input type="file" wire:model="photo" class="hidden" accept="image/*">
+                            </label>
+                        </div>
+                        <p class="mt-2 text-[10px] text-surface-500 uppercase tracking-wider font-semibold">Foto Pasien (Opsional)</p>
+                        @error('photo') <span class="text-xs text-danger-500 mt-1">{{ $message }}</span> @enderror
+                    </div>
+
                     <div>
                         <label class="block text-sm font-medium text-surface-300 mb-1">Nama *</label>
                         <input wire:model="name" type="text"
@@ -48,6 +82,20 @@
                             <label class="block text-sm font-medium text-surface-300 mb-1">No. Rekam Medis</label>
                             <input wire:model="medical_record_no" type="text"
                                 class="w-full px-4 py-2.5 bg-surface-800/50 border border-white/10 rounded-xl text-surface-100 focus:outline-none focus:border-primary-500 transition-all">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-surface-300 mb-1">Nama Ibu Kandung</label>
+                            <input wire:model="mother_name" type="text"
+                                class="w-full px-4 py-2.5 bg-surface-800/50 border border-white/10 rounded-xl text-surface-100 focus:outline-none focus:border-primary-500 transition-all">
+                            @error('mother_name') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-surface-300 mb-1">NIK Ibu Kandung</label>
+                            <input wire:model="mother_nik" type="text" maxlength="16"
+                                class="w-full px-4 py-2.5 bg-surface-800/50 border border-white/10 rounded-xl text-surface-100 focus:outline-none focus:border-primary-500 transition-all">
+                            @error('mother_nik') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
@@ -117,7 +165,20 @@
                 <tbody class="divide-y divide-white/5">
                     @forelse($patients as $patient)
                         <tr class="hover:bg-surface-800/50 transition-colors">
-                            <td class="px-6 py-4 text-sm text-surface-200 font-medium">{{ $patient->name }}</td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full overflow-hidden bg-surface-700 border border-white/5 flex-shrink-0">
+                                        @if($patient->photo_path)
+                                            <img src="{{ asset('storage/' . $patient->photo_path) }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center text-surface-500 text-xs font-bold bg-primary-500/10 text-primary-400">
+                                                {{ strtoupper(substr($patient->name, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="text-sm text-surface-200 font-medium">{{ $patient->name }}</div>
+                                </div>
+                            </td>
                             <td class="px-6 py-4 text-sm text-surface-400">{{ $patient->nik ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-surface-400">{{ $patient->medical_record_no ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-surface-400">{{ $patient->phone ?? '-' }}</td>

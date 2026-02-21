@@ -80,7 +80,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-center">
                                 <span
-                                    class="{{ $medicine->stock <= 5 ? 'text-danger-600 dark:text-danger-500 font-bold bg-danger-50 dark:bg-danger-500/10 border border-danger-200 dark:border-transparent px-2.5 py-1 rounded-full' : 'text-surface-700 dark:text-surface-300 font-semibold' }}">{{ $medicine->stock }}</span>
+                                    class="{{ $medicine->stock <= 5 ? 'text-danger-600 dark:text-danger-500 font-bold bg-danger-50 dark:bg-danger-500/10 border border-danger-200 dark:border-transparent px-2.5 py-1 rounded-full' : 'text-surface-700 dark:text-surface-100 font-semibold' }}">{{ $medicine->stock }}</span>
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <button wire:click="toggleActive({{ $medicine->id }})"

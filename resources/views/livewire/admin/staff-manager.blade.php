@@ -8,7 +8,7 @@
     <div class="flex justify-end gap-2 mb-6">
         <button wire:click="bulkSyncSatuSehat" wire:loading.attr="disabled"
             title="Sinkronisasi NIK massal untuk dokter yang belum punya ID Satu Sehat"
-            class="px-5 py-2.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 text-surface-700 dark:text-surface-300 font-semibold rounded-2xl shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+            class="px-5 py-2.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 text-surface-700 dark:text-surface-100 font-semibold rounded-2xl shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             <span class="hidden md:inline" wire:loading.remove wire:target="bulkSyncSatuSehat">Sinkron Massal Dokter</span>
             <span wire:loading wire:target="bulkSyncSatuSehat">Loading...</span>
@@ -27,37 +27,37 @@
                 <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-6">{{ $editingId ? 'Edit User' : 'Tambah User Baru' }}</h3>
                 <form wire:submit="save" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Nama *</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">Nama *</label>
                         <input wire:model="name" type="text"
                             class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('name') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Email *</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">Email *</label>
                         <input wire:model="email" type="email"
                             class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('email') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Password {{ $editingId ? '(Kosongkan jika tidak diubah)' : '*' }}</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">Password {{ $editingId ? '(Kosongkan jika tidak diubah)' : '*' }}</label>
                         <input wire:model="password" type="password"
                             class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('password') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Telepon</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">Telepon</label>
                         <input wire:model="phone" type="text"
                             class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">NIK (KTP)</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">NIK (KTP)</label>
                         <p class="text-xs text-surface-500 mb-2">Diperlukan untuk sinkronisasi Profil Tenaga Kesehatan ke Satu Sehat.</p>
                         <input wire:model="nik" type="text" maxlength="16" placeholder="16 Digit NIK"
                             class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('nik') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">Role *</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-2">Role *</label>
                         @error('selectedRoles') <p class="text-xs text-danger-500 mb-2">{{ $message }}</p> @enderror
                         <div class="flex flex-wrap gap-3">
                             @php
@@ -84,7 +84,7 @@
                     </div>
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" wire:click="$set('showForm', false)"
-                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all">Batal</button>
+                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-100 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all">Batal</button>
                         <button type="submit"
                             class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all">Simpan</button>
                     </div>
@@ -126,7 +126,7 @@
 
                     <div class="flex justify-end gap-3 pt-6">
                         <button type="button" wire:click="$set('showRoleModal', false)"
-                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all">Batal</button>
+                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-100 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all">Batal</button>
                         <button type="submit"
                             class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all">Simpan</button>
                     </div>
@@ -240,7 +240,7 @@
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button wire:click="edit({{ $member->id }})"
-                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 shadow-sm dark:shadow-none hover:bg-surface-50 dark:hover:bg-surface-700 hover:text-primary-600 transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
+                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-100 border border-surface-200 dark:border-white/10 shadow-sm dark:shadow-none hover:bg-surface-50 dark:hover:bg-surface-700 hover:text-primary-600 transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
                                         Edit
                                     </button>
                                     <button wire:click="openRoleModal({{ $member->id }})"

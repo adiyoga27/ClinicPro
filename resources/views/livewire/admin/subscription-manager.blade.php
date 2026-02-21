@@ -24,7 +24,7 @@
 
                 <div class="flex items-center gap-4 mb-4">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
-                        {{ $subscription?->plan === 'enterprise' ? 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400' : ($subscription?->plan === 'professional' ? 'bg-accent-100 dark:bg-accent-500/10 text-accent-700 dark:text-accent-400' : 'bg-surface-200 dark:bg-surface-800 text-surface-700 dark:text-surface-300') }}">
+                        {{ $subscription?->plan === 'enterprise' ? 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400' : ($subscription?->plan === 'professional' ? 'bg-accent-100 dark:bg-accent-500/10 text-accent-700 dark:text-accent-400' : 'bg-surface-200 dark:bg-surface-800 text-surface-700 dark:text-surface-100') }}">
                         {{ ucfirst($subscription?->plan ?? 'basic') }}
                     </span>
                     @if($subscription?->isActive())

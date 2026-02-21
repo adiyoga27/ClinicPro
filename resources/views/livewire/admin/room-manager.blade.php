@@ -7,7 +7,7 @@
 <div>
     <div class="flex justify-end gap-3 mb-6">
         <button wire:click="pullFromSatuSehat" wire:loading.attr="disabled"
-            class="px-6 py-2.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 text-surface-700 dark:text-surface-300 font-medium rounded-2xl shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-all flex items-center gap-2">
+            class="px-6 py-2.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 text-surface-700 dark:text-surface-100 font-medium rounded-2xl shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-all flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
             <span wire:loading.remove wire:target="pullFromSatuSehat">Tarik Data dari Satu Sehat</span>
             <span wire:loading wire:target="pullFromSatuSehat">Status Sinkronisasi...</span>
@@ -29,14 +29,14 @@
                 </h3>
                 <form wire:submit="save" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Nama Poli / Ruangan *</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">Nama Poli / Ruangan *</label>
                         <input wire:model="name" type="text" placeholder="Misal: Poli Umum, Poli Gigi"
                             class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('name') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" wire:click="$set('showForm', false)"
-                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all text-sm font-bold">Batal</button>
+                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-100 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all text-sm font-bold">Batal</button>
                         <button type="submit"
                             class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-bold text-sm shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all">Simpan</button>
                     </div>
@@ -70,7 +70,7 @@
                                     <div class="flex items-center gap-3">
                                         <span class="text-xs font-medium text-surface-500 dark:text-surface-400">Belum disinkronkan</span>
                                         <button wire:click="syncSatuSehat({{ $room->id }})" wire:loading.attr="disabled"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-colors shadow-sm disabled:opacity-50">
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-100 border border-surface-200 dark:border-white/10 hover:bg-primary-50 hover:text-primary-600 dark:hover:bg-primary-500/10 dark:hover:text-primary-400 transition-colors shadow-sm disabled:opacity-50">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                                             <span wire:loading.remove wire:target="syncSatuSehat({{ $room->id }})">Upload ke Kemenkes</span>
                                             <span wire:loading wire:target="syncSatuSehat({{ $room->id }})">Loading...</span>

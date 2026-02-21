@@ -28,26 +28,26 @@
                     @endphp
 
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Pilih Pasien *</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">Pilih Pasien *</label>
                         <x-searchable-select wireModel="patient_id" :options="$patientOptions" placeholder="Pilih Pasien..." />
                         @error('patient_id') <p class="mt-1.5 text-xs text-danger-500">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="z-40 relative">
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Pilih Dokter *</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">Pilih Dokter *</label>
                         <x-searchable-select wireModel="doctor_id" :options="$doctorOptions" placeholder="Pilih Dokter..." />
                         @error('doctor_id') <p class="mt-1.5 text-xs text-danger-500">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="z-30 relative">
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Pilih Poli/Ruangan *</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-100 mb-1.5">Pilih Poli/Ruangan *</label>
                         <x-searchable-select wireModel="room_id" :options="$roomOptions" placeholder="Pilih Poli/Ruang..." />
                         @error('room_id') <p class="mt-1.5 text-xs text-danger-500">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" wire:click="$set('showForm', false)"
-                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all text-sm font-bold">Batal</button>
+                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-100 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all text-sm font-bold">Batal</button>
                         <button type="submit"
                             class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-bold text-sm shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all">Tambah</button>
                     </div>

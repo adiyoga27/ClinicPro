@@ -111,6 +111,15 @@ class PatientManager extends Component
         $this->reset(['editingId', 'name', 'nik', 'medical_record_no', 'birth_date', 'gender', 'phone', 'address', 'blood_type', 'mother_name', 'mother_nik', 'photo', 'existingPhoto']);
     }
 
+    public array $syncLogs = [];
+    public bool $showSyncLogs = false;
+
+    public function closeSyncLogs(): void
+    {
+        $this->showSyncLogs = false;
+        $this->syncLogs = [];
+    }
+
     public function syncSatuSehat(int $id, \App\Services\SatuSehatService $satuSehatService): void
     {
         $patient = Patient::findOrFail($id);
@@ -128,6 +137,148 @@ class PatientManager extends Component
         } else {
             session()->flash('error', 'Gagal sinkronisasi: ' . ($result['error'] ?? 'Data tidak ditemukan di database Kependudukan Kemendagri / Satu Sehat.'));
         }
+    }
+
+    public function pullFromSatuSehat(\App\Services\SatuSehatService $satuSehatService): void
+    {
+        $this->syncLogs = [];
+        $result = $satuSehatService->getPatientsByOrganization();
+
+        if ($result['success']) {
+            $entries = $result['data']['entry'] ?? [];
+            $count = 0;
+
+            foreach ($entries as $entry) {
+                $resource = $entry['resource'] ?? null;
+                if ($resource && isset($resource['id'])) {
+                    $existingPatient = Patient::where('satu_sehat_patient_id', $resource['id'])->first();
+                    
+                    if (!$existingPatient) {
+                        // Try to get NIK
+                        $nik = '';
+                        $identifiers = $resource['identifier'] ?? [];
+                        foreach ($identifiers as $identifier) {
+                            if (isset($identifier['system']) && str_contains($identifier['system'], 'nik')) {
+                                $nik = $identifier['value'] ?? '';
+                                break;
+                            }
+                        }
+
+                        $name = $resource['name'][0]['text'] ?? ($resource['name'][0]['given'][0] ?? 'Unknown Patient');
+
+                        // Check if NIK exists
+                        if ($nik) {
+                            $patientByNik = Patient::where('nik', $nik)->first();
+                            if ($patientByNik) {
+                                // Just update the ID
+                                $patientByNik->update(['satu_sehat_patient_id' => $resource['id']]);
+                                $count++;
+                                $this->syncLogs[] = [
+                                    'status' => 'success',
+                                    'message' => "Update ID Satu Sehat untuk Pasien $name (NIK: $nik)"
+                                ];
+                                continue;
+                            }
+                        }
+
+                        // Create new patient
+                        $gender = isset($resource['gender']) ? ($resource['gender'] == 'male' ? 'male' : 'female') : null;
+                        $birthDate = $resource['birthDate'] ?? null;
+                        
+                        // Try to get address
+                        $addressStr = '';
+                        if (isset($resource['address']) && count($resource['address']) > 0) {
+                            $addressLines = $resource['address'][0]['line'] ?? [];
+                            $addressStr = implode(', ', $addressLines);
+                        }
+
+                        // Try to get phone
+                        $phone = '';
+                        if (isset($resource['telecom'])) {
+                            foreach ($resource['telecom'] as $telecom) {
+                                if (isset($telecom['system']) && $telecom['system'] === 'phone') {
+                                    $phone = $telecom['value'] ?? '';
+                                    break;
+                                }
+                            }
+                        }
+
+                        Patient::create([
+                            'satu_sehat_patient_id' => $resource['id'],
+                            'nik' => $nik ?: null,
+                            'name' => $name,
+                            'gender' => $gender,
+                            'birth_date' => $birthDate,
+                            'address' => $addressStr ?: null,
+                            'phone' => $phone ?: null,
+                        ]);
+                        $count++;
+                        $this->syncLogs[] = [
+                            'status' => 'success',
+                            'message' => "Berhasil menarik data Pasien Baru: $name"
+                        ];
+                    }
+                }
+            }
+
+            if ($count > 0) {
+                $this->showSyncLogs = true;
+                session()->flash('success', "Proses penarikan selesai. Menarik $count pasien dari Satu Sehat.");
+            } else {
+                session()->flash('success', "Semua pasien dari Satu Sehat sudah ada di sistem (up-to-date).");
+            }
+        } else {
+            session()->flash('error', 'Gagal menarik data pasien: ' . ($result['error'] ?? 'Terjadi kesalahan.'));
+        }
+    }
+
+    public function bulkSyncSatuSehat(\App\Services\SatuSehatService $satuSehatService): void
+    {
+        $this->syncLogs = [];
+        
+        // Find patients with NIK but without Satu Sehat ID
+        $patients = Patient::whereNotNull('nik')
+            ->where('nik', '!=', '')
+            ->whereNull('satu_sehat_patient_id')
+            ->limit(50) // Limit to avoid timeout
+            ->get();
+
+        if ($patients->isEmpty()) {
+            session()->flash('success', 'Tidak ada data pasien (dengan NIK) yang perlu disinkronisasi.');
+            return;
+        }
+
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($patients as $patient) {
+            $result = $satuSehatService->getPatientByNik($patient->nik);
+            if ($result['success'] && isset($result['data']['id'])) {
+                $patient->update(['satu_sehat_patient_id' => $result['data']['id']]);
+                $successCount++;
+                $this->syncLogs[] = [
+                    'status' => 'success',
+                    'message' => "Sinkronisasi berhasil untuk Pasien {$patient->name} (NIK: {$patient->nik})"
+                ];
+            } else {
+                $failCount++;
+                $errorMsg = is_string($result['error']) ? $result['error'] : 'Data tidak ditemukan / NIK Invalid';
+                
+                $this->syncLogs[] = [
+                    'status' => 'error',
+                    'message' => "Gagal sinkron pasien {$patient->name} (NIK: {$patient->nik}) - Error: {$errorMsg}"
+                ];
+            }
+        }
+
+        $this->showSyncLogs = true;
+        
+        $message = "Proses sinkronisasi massal selesai. $successCount berhasil.";
+        if ($failCount > 0) {
+            $message .= " $failCount NIK tidak valid/tidak ditemukan.";
+        }
+        
+        session()->flash('success', $message);
     }
 
     public function delete(int $id): void

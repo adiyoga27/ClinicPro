@@ -28,45 +28,91 @@ class StaffManager extends Component
         $this->showForm = true;
     }
 
+    public function edit(int $id): void
+    {
+        $user = User::findOrFail($id);
+        $this->editingId = $user->id;
+        $this->name = $user->name;
+        $this->email = $user->email;
+        $this->phone = $user->phone ?? '';
+        $this->nik = $user->nik ?? '';
+        $this->selectedRoles = $user->roles->pluck('name')->toArray();
+        $this->password = '';
+        $this->showForm = true;
+    }
+
     public function save(): void
     {
-        $this->validate([
+        $rules = [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'email' => 'required|email|unique:users,email' . ($this->editingId ? ',' . $this->editingId : ''),
             'phone' => 'nullable|string|max:20',
             'nik' => 'nullable|digits:16',
             'selectedRoles' => 'required|array|min:1',
             'selectedRoles.*' => 'in:admin,doctor,cashier',
-        ], [
+        ];
+
+        if (!$this->editingId) {
+            $rules['password'] = 'required|min:6';
+        } elseif (!empty($this->password)) {
+            $rules['password'] = 'min:6';
+        }
+
+        $this->validate($rules, [
             'selectedRoles.required' => 'Pilih minimal satu role.',
             'selectedRoles.min' => 'Pilih minimal satu role.',
             'nik.digits' => 'NIK harus 16 digit angka.',
         ]);
 
-        $user = User::create([
-            'clinic_id' => auth()->user()->clinic_id,
+        $data = [
             'name' => $this->name,
             'email' => $this->email,
-            'password' => $this->password,
             'phone' => $this->phone ?: null,
             'nik' => $this->nik ?: null,
-            'is_active' => true,
-        ]);
+        ];
+
+        if (!empty($this->password)) {
+            $data['password'] = $this->password;
+        }
+
+        if ($this->editingId) {
+            $user = User::findOrFail($this->editingId);
+            $user->update($data);
+            $message = 'Staf berhasil diperbarui.';
+        } else {
+            $data['clinic_id'] = auth()->user()->clinic_id;
+            $data['is_active'] = true;
+            $user = User::create($data);
+            $message = 'Staf berhasil ditambahkan.';
+        }
 
         $user->syncRoles($this->selectedRoles);
 
         $this->showForm = false;
-        $this->reset(['name', 'email', 'password', 'phone', 'nik', 'selectedRoles']);
-        session()->flash('success', 'Staf berhasil ditambahkan.');
+        $this->reset(['editingId', 'name', 'email', 'password', 'phone', 'nik', 'selectedRoles']);
+        session()->flash('success', $message);
+    }
+
+    public array $syncLogs = [];
+    public bool $showSyncLogs = false;
+
+    public function closeSyncLogs(): void
+    {
+        $this->showSyncLogs = false;
+        $this->syncLogs = [];
     }
 
     public function syncSatuSehat(int $id, \App\Services\SatuSehatService $satuSehatService)
     {
         $user = User::findOrFail($id);
         
+        if (!$user->hasRole('doctor')) {
+            session()->flash('error', 'Fitur sinkronisasi Satu Sehat hanya diperuntukkan bagi Dokter.');
+            return;
+        }
+
         if (empty($user->nik)) {
-            session()->flash('error', 'Staf ini belum memiliki NIK. Pembaharuan data dokter di DTO Kemenkes membutuhkan NIK.');
+            session()->flash('error', 'Dokter ini belum memiliki NIK. Pembaharuan data dokter di DTO Kemenkes membutuhkan NIK.');
             return;
         }
 
@@ -78,6 +124,57 @@ class StaffManager extends Component
         } else {
             session()->flash('error', 'Gagal sinkronisasi: ' . ($result['error'] ?? 'Data tidak ditemukan di SISDMK/Satu Sehat.'));
         }
+    }
+
+    public function bulkSyncSatuSehat(\App\Services\SatuSehatService $satuSehatService): void
+    {
+        $this->syncLogs = [];
+        
+        // Find doctors with NIK but without Satu Sehat ID
+        $doctors = User::role('doctor')
+            ->where('clinic_id', auth()->user()->clinic_id)
+            ->whereNotNull('nik')
+            ->where('nik', '!=', '')
+            ->whereNull('satusehat_id')
+            ->limit(50)
+            ->get();
+
+        if ($doctors->isEmpty()) {
+            session()->flash('success', 'Tidak ada data dokter (dengan NIK) yang perlu disinkronisasi.');
+            return;
+        }
+
+        $successCount = 0;
+        $failCount = 0;
+
+        foreach ($doctors as $doctor) {
+            $result = $satuSehatService->getPractitionerByNik($doctor->nik);
+            if ($result['success'] && isset($result['data']['id'])) {
+                $doctor->update(['satusehat_id' => $result['data']['id']]);
+                $successCount++;
+                $this->syncLogs[] = [
+                    'status' => 'success',
+                    'message' => "Sinkronisasi berhasil untuk Dokter {$doctor->name} (NIK: {$doctor->nik})"
+                ];
+            } else {
+                $failCount++;
+                $errorMsg = is_string($result['error']) ? $result['error'] : 'Data tidak ditemukan di SISDMK';
+                
+                $this->syncLogs[] = [
+                    'status' => 'error',
+                    'message' => "Gagal sinkron Dokter {$doctor->name} (NIK: {$doctor->nik}) - Error: {$errorMsg}"
+                ];
+            }
+        }
+
+        $this->showSyncLogs = true;
+        
+        $message = "Proses sinkronisasi massal selesai. $successCount berhasil.";
+        if ($failCount > 0) {
+            $message .= " $failCount NIK tidak terdaftar di SISDMK.";
+        }
+        
+        session()->flash('success', $message);
     }
 
     public function openRoleModal(int $id): void

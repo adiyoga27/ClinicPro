@@ -16,10 +16,27 @@
             <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari pasien..."
                 class="w-full pl-10 pr-4 py-3 bg-white dark:bg-surface-900/60 shadow-sm dark:shadow-none border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 placeholder-surface-400 dark:placeholder-surface-600 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/40 transition-all">
         </div>
-        <button wire:click="create"
-            class="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all whitespace-nowrap">
-            + Tambah Pasien
-        </button>
+        <div class="flex gap-2">
+            <button wire:click="pullFromSatuSehat" wire:loading.attr="disabled"
+                title="Tarik daftar pasien terdaftar dari Satu Sehat KemKes"
+                class="px-5 py-3 bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 text-surface-700 dark:text-surface-300 font-semibold rounded-xl shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <span class="hidden xl:inline" wire:loading.remove wire:target="pullFromSatuSehat">Tarik Data Satu Sehat</span>
+                <span wire:loading wire:target="pullFromSatuSehat">Loading...</span>
+            </button>
+            <button wire:click="bulkSyncSatuSehat" wire:loading.attr="disabled"
+                title="Sinkronisasi NIK massal untuk pasien lokal yang belum punya ID Satu Sehat"
+                class="px-5 py-3 bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 text-surface-700 dark:text-surface-300 font-semibold rounded-xl shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <span class="hidden xl:inline" wire:loading.remove wire:target="bulkSyncSatuSehat">Sinkron Massal</span>
+                <span wire:loading wire:target="bulkSyncSatuSehat">Loading...</span>
+            </button>
+            <button wire:click="create"
+                class="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span class="hidden md:inline">Tambah Pasien</span>
+            </button>
+        </div>
     </div>
 
     <!-- Form Modal -->
@@ -144,6 +161,47 @@
                             class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white text-sm font-bold hover:shadow-lg shadow-md hover:shadow-primary-500/30 shadow-primary-500/20 hover:-translate-y-0.5 transition-all">Simpan</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    @endif
+
+    <!-- Sync Logs Modal -->
+    @if($showSyncLogs)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            wire:click.self="closeSyncLogs">
+            <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-2xl p-6 lg:p-8 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl dark:shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-surface-900 dark:text-white">Log Sinkronisasi Satu Sehat</h3>
+                    <button wire:click="closeSyncLogs" class="text-surface-400 hover:text-surface-600 dark:hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto space-y-2 pr-2 mb-6">
+                    @forelse($syncLogs as $log)
+                        <div class="p-3 rounded-xl border flex items-start gap-3 {{ $log['status'] === 'success' ? 'bg-success-50 dark:bg-success-500/10 border-success-200 dark:border-success-500/20 text-success-800 dark:text-success-200' : 'bg-danger-50 dark:bg-danger-500/10 border-danger-200 dark:border-danger-500/20 text-danger-800 dark:text-danger-200' }}">
+                            <div class="mt-0.5">
+                                @if($log['status'] === 'success')
+                                    <svg class="w-4 h-4 text-success-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                @else
+                                    <svg class="w-4 h-4 text-danger-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                @endif
+                            </div>
+                            <p class="text-sm">{{ $log['message'] }}</p>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-surface-500 dark:text-surface-400 border-2 border-dashed border-surface-200 dark:border-white/10 rounded-xl">
+                            <p>Tidak ada log untuk ditampilkan.</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <div class="flex justify-end pt-4 border-t border-surface-200 dark:border-white/10 mt-auto">
+                    <button type="button" wire:click="closeSyncLogs"
+                        class="px-6 py-2.5 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-white border border-surface-200 dark:border-white/10 hover:bg-surface-200 dark:hover:bg-surface-700 shadow-sm text-sm font-bold transition-all">
+                        Tutup
+                    </button>
+                </div>
             </div>
         </div>
     @endif

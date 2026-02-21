@@ -5,7 +5,14 @@
 <x-slot:header>Manajemen User</x-slot:header>
 
 <div>
-    <div class="flex justify-end mb-6">
+    <div class="flex justify-end gap-2 mb-6">
+        <button wire:click="bulkSyncSatuSehat" wire:loading.attr="disabled"
+            title="Sinkronisasi NIK massal untuk dokter yang belum punya ID Satu Sehat"
+            class="px-5 py-2.5 bg-white dark:bg-surface-800 border border-surface-200 dark:border-white/10 text-surface-700 dark:text-surface-300 font-semibold rounded-2xl shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700/50 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span class="hidden md:inline" wire:loading.remove wire:target="bulkSyncSatuSehat">Sinkron Massal Dokter</span>
+            <span wire:loading wire:target="bulkSyncSatuSehat">Loading...</span>
+        </button>
         <button wire:click="create"
             class="px-6 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium rounded-2xl shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:-translate-y-0.5 transition-all">
             + Tambah User
@@ -17,7 +24,7 @@
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
             wire:click.self="$set('showForm', false)">
             <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-2xl p-6 lg:p-8 w-full max-w-md shadow-xl dark:shadow-2xl">
-                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-6">Tambah User Baru</h3>
+                <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-6">{{ $editingId ? 'Edit User' : 'Tambah User Baru' }}</h3>
                 <form wire:submit="save" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Nama *</label>
@@ -32,7 +39,7 @@
                         @error('email') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Password *</label>
+                        <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Password {{ $editingId ? '(Kosongkan jika tidak diubah)' : '*' }}</label>
                         <input wire:model="password" type="password"
                             class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('password') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
@@ -128,6 +135,47 @@
         </div>
     @endif
 
+    {{-- Sync Logs Modal --}}
+    @if($showSyncLogs)
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            wire:click.self="closeSyncLogs">
+            <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-2xl p-6 lg:p-8 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl dark:shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-surface-900 dark:text-white">Log Sinkronisasi Satu Sehat</h3>
+                    <button wire:click="closeSyncLogs" class="text-surface-400 hover:text-surface-600 dark:hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto space-y-2 pr-2 mb-6">
+                    @forelse($syncLogs as $log)
+                        <div class="p-3 rounded-xl border flex items-start gap-3 {{ $log['status'] === 'success' ? 'bg-success-50 dark:bg-success-500/10 border-success-200 dark:border-success-500/20 text-success-800 dark:text-success-200' : 'bg-danger-50 dark:bg-danger-500/10 border-danger-200 dark:danger-success-500/20 text-danger-800 dark:text-danger-200' }}">
+                            <div class="mt-0.5">
+                                @if($log['status'] === 'success')
+                                    <svg class="w-4 h-4 text-success-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                @else
+                                    <svg class="w-4 h-4 text-danger-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                @endif
+                            </div>
+                            <p class="text-sm">{{ $log['message'] }}</p>
+                        </div>
+                    @empty
+                        <div class="p-6 text-center text-surface-500 dark:text-surface-400 border-2 border-dashed border-surface-200 dark:border-white/10 rounded-xl">
+                            <p>Tidak ada log untuk ditampilkan.</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <div class="flex justify-end pt-4 border-t border-surface-200 dark:border-white/10 mt-auto">
+                    <button type="button" wire:click="closeSyncLogs"
+                        class="px-6 py-2.5 rounded-xl bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-white border border-surface-200 dark:border-white/10 hover:bg-surface-200 dark:hover:bg-surface-700 shadow-sm text-sm font-bold transition-all">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- User Table --}}
     <div class="bg-white dark:bg-surface-900/60 shadow-sm dark:shadow-none border border-surface-200 dark:border-white/5 rounded-2xl overflow-hidden">
         <div class="overflow-x-auto">
@@ -191,6 +239,10 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
+                                    <button wire:click="edit({{ $member->id }})"
+                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 shadow-sm dark:shadow-none hover:bg-surface-50 dark:hover:bg-surface-700 hover:text-primary-600 transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
+                                        Edit
+                                    </button>
                                     <button wire:click="openRoleModal({{ $member->id }})"
                                         class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-primary-500/10 text-surface-700 dark:text-primary-400 border border-surface-200 dark:border-transparent shadow-sm dark:shadow-none hover:bg-surface-50 dark:hover:bg-primary-500/20 transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
                                         Atur Role

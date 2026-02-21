@@ -201,6 +201,35 @@ class SatuSehatService
     }
 
     /**
+     * Get Patients by Organization ID
+     */
+    public function getPatientsByOrganization(): array
+    {
+        $token = $this->getAccessToken();
+
+        if (!$token) {
+            return ['success' => false, 'error' => 'No access token available'];
+        }
+
+        // According to FHIR specs, we can query patients by organization
+        $url = $this->baseUrl . '/fhir-r4/v1/Patient?organization=' . $this->organizationId;
+
+        $response = Http::withToken($token)->get($url);
+
+        if ($response->successful()) {
+            return [
+                'success' => true,
+                'data' => $response->json(),
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => $response->body(),
+        ];
+    }
+
+    /**
      * Build FHIR Patient resource from local patient model.
      */
     public function buildPatientResource($patient): array

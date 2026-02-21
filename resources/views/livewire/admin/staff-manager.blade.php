@@ -16,31 +16,31 @@
     @if($showForm)
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
             wire:click.self="$set('showForm', false)">
-            <div class="bg-white/90 dark:bg-surface-900/90 backdrop-blur-2xl border border-white dark:border-white/10 rounded-3xl p-8 w-full max-w-md shadow-2xl shadow-surface-300/40 dark:shadow-none ring-1 ring-surface-200/50 dark:ring-0">
+            <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-2xl p-6 lg:p-8 w-full max-w-md shadow-xl dark:shadow-2xl">
                 <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-6">Tambah User Baru</h3>
                 <form wire:submit="save" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Nama *</label>
                         <input wire:model="name" type="text"
-                            class="w-full px-4 py-3 bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-white/10 rounded-2xl text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
+                            class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('name') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Email *</label>
                         <input wire:model="email" type="email"
-                            class="w-full px-4 py-3 bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-white/10 rounded-2xl text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
+                            class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('email') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Password *</label>
                         <input wire:model="password" type="password"
-                            class="w-full px-4 py-3 bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-white/10 rounded-2xl text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
+                            class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                         @error('password') <span class="text-xs text-danger-500">{{ $message }}</span> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">Telepon</label>
                         <input wire:model="phone" type="text"
-                            class="w-full px-4 py-3 bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200/60 dark:border-white/10 rounded-2xl text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
+                            class="w-full px-4 py-2.5 bg-white dark:bg-surface-800/50 border border-surface-200 dark:border-white/10 rounded-xl shadow-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">Role *</label>
@@ -57,9 +57,9 @@
                                 <label class="flex-1 min-w-[100px] cursor-pointer">
                                     <input type="checkbox" wire:model="selectedRoles" value="{{ $roleValue }}"
                                         class="hidden peer">
-                                    <div class="flex items-center gap-2 p-3 rounded-2xl border-2 transition-all hover:-translate-y-0.5
-                                                                        peer-checked:border-{{ $roleInfo['color'] }}-500 peer-checked:bg-{{ $roleInfo['color'] }}-500/5 dark:peer-checked:bg-{{ $roleInfo['color'] }}-500/10 peer-checked:shadow-sm
-                                                                        border-surface-200/60 dark:border-white/10 hover:border-surface-300 dark:hover:border-white/20 bg-surface-50/30 dark:bg-transparent">
+                                    <div class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all hover:-translate-y-0.5
+                                                                        peer-checked:border-{{ $roleInfo['color'] }}-500 peer-checked:bg-{{ $roleInfo['color'] }}-50/50 dark:peer-checked:bg-{{ $roleInfo['color'] }}-500/10 peer-checked:shadow-sm
+                                                                        border-surface-200 dark:border-white/10 hover:border-surface-300 dark:hover:border-white/20 bg-white dark:bg-transparent">
                                         <svg class="w-5 h-5 text-{{ $roleInfo['color'] }}-500 dark:text-{{ $roleInfo['color'] }}-400" fill="none" viewBox="0 0 24 24"
                                             stroke="currentColor">{!! $roleInfo['icon'] !!}</svg>
                                         <span class="text-sm font-medium text-surface-900 dark:text-surface-200">{{ $roleInfo['label'] }}</span>
@@ -70,9 +70,9 @@
                     </div>
                     <div class="flex justify-end gap-3 pt-4">
                         <button type="button" wire:click="$set('showForm', false)"
-                            class="px-5 py-2.5 rounded-2xl bg-surface-100/50 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-200/50 dark:border-white/10 hover:bg-surface-200/50 dark:hover:bg-surface-700 transition-all">Batal</button>
+                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all">Batal</button>
                         <button type="submit"
-                            class="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:-translate-y-0.5 transition-all">Simpan</button>
+                            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -81,9 +81,9 @@
 
     {{-- Edit Roles Modal --}}
     @if($showRoleModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
             wire:click.self="$set('showRoleModal', false)">
-            <div class="bg-white/90 dark:bg-surface-900/90 backdrop-blur-2xl border border-white dark:border-white/10 rounded-3xl p-8 w-full max-w-sm shadow-2xl shadow-surface-300/40 dark:shadow-none ring-1 ring-surface-200/50 dark:ring-0">
+            <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-2xl p-6 lg:p-8 w-full max-w-sm shadow-xl dark:shadow-2xl">
                 <h3 class="text-xl font-bold text-surface-900 dark:text-surface-100 mb-1">Atur Role</h3>
                 <p class="text-sm text-surface-500 mb-6">{{ $roleUserName }}</p>
                 @error('editRoles') <p class="text-xs text-danger-500 mb-3">{{ $message }}</p> @enderror
@@ -99,10 +99,10 @@
 
                     @foreach($roleOptions as $roleValue => $roleInfo)
                         <label
-                            class="flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all hover:-translate-y-0.5 bg-surface-50/30 dark:bg-transparent
-                                                            {{ in_array($roleValue, $editRoles) ? 'border-' . $roleInfo['color'] . '-500 bg-' . $roleInfo['color'] . '-500/5 dark:bg-' . $roleInfo['color'] . '-500/10 shadow-sm' : 'border-surface-200/60 dark:border-white/10 hover:border-surface-300 dark:hover:border-white/20' }}">
+                            class="flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all hover:-translate-y-0.5 bg-white dark:bg-transparent shadow-sm
+                                                            {{ in_array($roleValue, $editRoles) ? 'border-' . $roleInfo['color'] . '-500 bg-' . $roleInfo['color'] . '-50/50 dark:bg-' . $roleInfo['color'] . '-500/10' : 'border-surface-200 dark:border-white/10 hover:border-surface-300 dark:hover:border-white/20' }}">
                             <input type="checkbox" wire:model.live="editRoles" value="{{ $roleValue }}"
-                                class="w-5 h-5 rounded border-surface-300 dark:border-white/20 bg-surface-50 dark:bg-surface-800 text-{{ $roleInfo['color'] }}-500 focus:ring-{{ $roleInfo['color'] }}-500/40 cursor-pointer">
+                                class="w-5 h-5 rounded border-surface-300 dark:border-white/20 bg-white dark:bg-surface-800 text-{{ $roleInfo['color'] }}-500 focus:ring-{{ $roleInfo['color'] }}-500/40 cursor-pointer">
                             <div>
                                 <p class="text-sm font-semibold text-surface-900 dark:text-surface-200">{{ $roleInfo['label'] }}</p>
                                 <p class="text-xs text-surface-600 dark:text-surface-500">{{ $roleInfo['desc'] }}</p>
@@ -112,9 +112,9 @@
 
                     <div class="flex justify-end gap-3 pt-6">
                         <button type="button" wire:click="$set('showRoleModal', false)"
-                            class="px-5 py-2.5 rounded-2xl bg-surface-100/50 dark:bg-surface-800 text-surface-600 dark:text-surface-300 border border-surface-200/50 dark:border-white/10 hover:bg-surface-200/50 dark:hover:bg-surface-700 transition-all">Batal</button>
+                            class="px-5 py-2.5 rounded-xl bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 border border-surface-200 dark:border-white/10 shadow-sm hover:bg-surface-50 dark:hover:bg-surface-700 transition-all">Batal</button>
                         <button type="submit"
-                            class="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 hover:-translate-y-0.5 transition-all">Simpan</button>
+                            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 text-white font-medium shadow-md shadow-primary-500/20 hover:shadow-lg hover:shadow-primary-500/30 hover:-translate-y-0.5 transition-all">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -122,11 +122,11 @@
     @endif
 
     {{-- User Table --}}
-    <div class="rounded-3xl bg-white/70 dark:bg-surface-900/60 backdrop-blur-xl shadow-xl shadow-surface-200/40 dark:shadow-none border border-white dark:border-white/5 ring-1 ring-surface-200/50 dark:ring-0 overflow-hidden">
+    <div class="bg-white dark:bg-surface-900/60 shadow-sm dark:shadow-none border border-surface-200 dark:border-white/5 rounded-2xl overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full">
+            <table class="w-full min-w-[800px]">
                 <thead>
-                    <tr class="text-left text-xs bg-surface-100/50 dark:bg-transparent text-surface-500 dark:text-surface-400 uppercase tracking-wider font-semibold border-b border-surface-200/50 dark:border-white/5">
+                    <tr class="text-left text-xs bg-surface-50/50 dark:bg-transparent text-surface-500 dark:text-surface-400 uppercase tracking-wider font-semibold border-b border-surface-200 dark:border-white/5">
                         <th class="px-6 py-3 font-medium">Nama</th>
                         <th class="px-6 py-3 font-medium">Email</th>
                         <th class="px-6 py-3 font-medium">Role</th>
@@ -136,8 +136,8 @@
                 </thead>
                 <tbody class="divide-y divide-surface-100 dark:divide-white/5">
                     @forelse($users as $member)
-                        <tr class="hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
-                            <td class="px-6 py-4 text-sm text-surface-900 dark:text-surface-200 font-medium">{{ $member->name }}</td>
+                        <tr class="hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors group">
+                            <td class="px-6 py-4 text-sm text-surface-900 dark:text-surface-200 font-medium whitespace-nowrap">{{ $member->name }}</td>
                             <td class="px-6 py-4 text-sm text-surface-500 dark:text-surface-400">{{ $member->email }}</td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-wrap gap-1.5">
@@ -158,18 +158,18 @@
                             </td>
                             <td class="px-6 py-4">
                                 <span
-                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $member->is_active ? 'bg-success-50 dark:bg-success-500/10 text-success-700 dark:text-success-400 ring-1 ring-inset ring-success-500/20' : 'bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-400 ring-1 ring-inset ring-danger-500/20' }}">
+                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide {{ $member->is_active ? 'bg-success-50 dark:bg-success-500/10 text-success-700 dark:text-success-400 border border-success-200/50 dark:border-transparent' : 'bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-400 border border-danger-200/50 dark:border-transparent' }}">
                                     {{ $member->is_active ? 'Aktif' : 'Nonaktif' }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button wire:click="openRoleModal({{ $member->id }})"
-                                        class="px-3 py-1.5 text-xs font-medium rounded-lg bg-surface-100 dark:bg-primary-500/10 text-surface-600 dark:text-primary-400 border border-surface-200 dark:border-transparent hover:bg-surface-200 dark:hover:bg-primary-500/20 transition-all">
+                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-primary-500/10 text-surface-700 dark:text-primary-400 border border-surface-200 dark:border-transparent shadow-sm dark:shadow-none hover:bg-surface-50 dark:hover:bg-primary-500/20 transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
                                         Atur Role
                                     </button>
                                     <button wire:click="toggleActive({{ $member->id }})"
-                                        class="px-3 py-1.5 text-xs font-medium rounded-lg transition-all {{ $member->is_active ? 'bg-danger-50 dark:bg-danger-500/10 text-danger-600 dark:text-danger-500 border border-danger-200 dark:border-transparent hover:bg-danger-100 dark:hover:bg-danger-500/20' : 'bg-success-50 dark:bg-success-500/10 text-success-700 dark:text-success-400 border border-success-200 dark:border-transparent hover:bg-success-100 dark:hover:bg-success-500/20' }}">
+                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all shadow-sm dark:shadow-none opacity-100 lg:opacity-0 lg:group-hover:opacity-100 {{ $member->is_active ? 'bg-white dark:bg-danger-500/10 text-danger-600 dark:text-danger-500 border border-surface-200 dark:border-transparent hover:bg-danger-50 hover:border-danger-200 dark:hover:border-transparent dark:hover:bg-danger-500/20' : 'bg-white dark:bg-success-500/10 text-success-700 dark:text-success-400 border border-surface-200 dark:border-transparent hover:bg-success-50 hover:border-success-200 dark:hover:border-transparent dark:hover:bg-success-500/20' }}">
                                         {{ $member->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                                     </button>
                                 </div>

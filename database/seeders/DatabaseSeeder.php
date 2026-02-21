@@ -91,5 +91,12 @@ class DatabaseSeeder extends Seeder
 
         // Seed ICD-10 codes (Satu Sehat compliant)
         $this->call(Icd10Seeder::class);
+
+        // Seed other demo data
+        $this->call([
+            PatientSeeder::class,
+            MedicineSeeder::class,
+            ServiceSeeder::class,
+        ]);
     }
 }

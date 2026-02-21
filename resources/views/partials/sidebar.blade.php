@@ -77,6 +77,15 @@
             </svg>
             Obat
         </a>
+
+        <a href="{{ route('admin.services') }}"
+            class="{{ $linkClass }} {{ request()->routeIs('admin.services*') ? $activeClass : $inactiveClass }}">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M18 10h-1.26A8 8 0 109 20h9a2 2 0 002-2v-5a2 2 0 00-2-2z" />
+            </svg>
+            Jasa / Tindakan
+        </a>
     </div>
 @endif
 

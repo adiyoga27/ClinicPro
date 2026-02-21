@@ -26,9 +26,7 @@ class MedicineManager extends Component
     public $stock = 0;
     public $is_active = true;
 
-    // Doctor fee
-    public $doctorFee;
-    public $showFeeModal = false;
+
 
     protected function rules()
     {
@@ -43,7 +41,6 @@ class MedicineManager extends Component
 
     public function mount()
     {
-        $this->doctorFee = auth()->user()->clinic->doctor_fee ?? 50000;
     }
 
     public function updatingSearch()
@@ -122,13 +119,7 @@ class MedicineManager extends Component
         $medicine->update(['is_active' => !$medicine->is_active]);
     }
 
-    public function saveDoctorFee()
-    {
-        $this->validate(['doctorFee' => 'required|numeric|min:0']);
-        auth()->user()->clinic->update(['doctor_fee' => $this->doctorFee]);
-        $this->showFeeModal = false;
-        session()->flash('success', 'Jasa dokter berhasil diperbarui.');
-    }
+
 
     public function render()
     {

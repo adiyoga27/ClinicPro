@@ -17,20 +17,7 @@
         </div>
     @endif
 
-    {{-- Doctor Fee Card --}}
-    <div
-        class="mb-6 p-5 rounded-2xl bg-gradient-to-r from-primary-500/10 to-accent-500/5 border border-primary-500/15 flex items-center justify-between">
-        <div>
-            <p class="text-sm text-surface-400">Jasa Dokter (per kunjungan)</p>
-            <p class="text-2xl font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
-                Rp {{ number_format($doctorFee, 0, ',', '.') }}
-            </p>
-        </div>
-        <button wire:click="$set('showFeeModal', true)"
-            class="px-4 py-2 rounded-xl bg-surface-800 text-surface-300 border border-white/10 hover:bg-surface-700 text-sm font-medium transition-all">
-            Ubah
-        </button>
-    </div>
+
 
     {{-- Search & Add --}}
     <div class="flex flex-col sm:flex-row gap-3 mb-6">
@@ -216,27 +203,5 @@
         </div>
     @endif
 
-    {{-- Doctor Fee Modal --}}
-    @if($showFeeModal)
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-            <div class="bg-surface-900 border border-white/10 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-                <h3 class="text-lg font-bold text-surface-100 mb-4">Ubah Jasa Dokter</h3>
-                <div>
-                    <label class="block text-xs font-medium text-surface-400 mb-1.5">Biaya per Kunjungan (Rp)</label>
-                    <input type="number" wire:model="doctorFee" min="0"
-                        class="w-full px-4 py-2.5 bg-surface-800 border border-white/10 rounded-xl text-surface-200 text-sm focus:border-primary-500 transition-all">
-                </div>
-                <div class="flex gap-3 mt-5">
-                    <button wire:click="$set('showFeeModal', false)"
-                        class="flex-1 px-4 py-2.5 rounded-xl bg-surface-800 text-surface-300 border border-white/10 hover:bg-surface-700 text-sm font-medium transition-all">
-                        Batal
-                    </button>
-                    <button wire:click="saveDoctorFee"
-                        class="flex-1 px-4 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-500 shadow-lg shadow-primary-500/20 transition-all">
-                        Simpan
-                    </button>
-                </div>
-            </div>
-        </div>
-    @endif
+
 </div>

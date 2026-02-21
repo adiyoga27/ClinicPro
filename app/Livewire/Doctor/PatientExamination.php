@@ -11,6 +11,7 @@ use App\Models\MedicalRecord;
 use App\Models\Medicine;
 use App\Models\Prescription;
 use App\Models\PrescriptionItem;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -45,14 +46,18 @@ class PatientExamination extends Component
     public $assessment = '';
     public $icdSearch = '';
     public $selectedDiagnoses = [];
+    public $showIcdModal = false;
+    public $icdModalSearch = '';
+    public $icdModalResults = [];
 
-    // Step 4: Plan & Prescriptions
+    // Step 4: Plan, Prescriptions, & Services
     public $plan = '';
     public $medicineSearch = '';
     public $prescriptionItems = [];
+    public $serviceSearch = '';
+    public $selectedServices = [];
 
     // Computed
-    public $doctorFee = 0;
 
     public function mount(ClinicQueue $queue)
     {
@@ -69,20 +74,81 @@ class PatientExamination extends Component
 
         $this->queue = $queue;
         $this->patient = $queue->patient;
-        $this->doctorFee = auth()->user()->clinic->doctor_fee ?? 50000;
 
         // Mark queue as in_progress
         if ($queue->status === 'waiting') {
             $queue->update(['status' => 'in_progress']);
         }
+
+        // Load Draft if exists
+        $draft = Cache::get('exam_draft_' . $queue->id);
+        if ($draft) {
+            $this->step = $draft['step'] ?? 1;
+            $this->height = $draft['height'] ?? null;
+            $this->weight = $draft['weight'] ?? null;
+            $this->blood_pressure_systolic = $draft['blood_pressure_systolic'] ?? null;
+            $this->blood_pressure_diastolic = $draft['blood_pressure_diastolic'] ?? null;
+            $this->temperature = $draft['temperature'] ?? null;
+            $this->heart_rate = $draft['heart_rate'] ?? null;
+            $this->respiratory_rate = $draft['respiratory_rate'] ?? null;
+            $this->spo2 = $draft['spo2'] ?? null;
+            $this->allergy_notes = $draft['allergy_notes'] ?? null;
+            $this->subjective = $draft['subjective'] ?? '';
+            $this->objective = $draft['objective'] ?? '';
+            $this->assessment = $draft['assessment'] ?? '';
+            $this->selectedDiagnoses = $draft['selectedDiagnoses'] ?? [];
+            $this->plan = $draft['plan'] ?? '';
+            $this->prescriptionItems = $draft['prescriptionItems'] ?? [];
+            $this->selectedServices = $draft['selectedServices'] ?? [];
+        } else {
+            // Load automatic services if no draft exists
+            $autoServices = \App\Models\Service::where('clinic_id', auth()->user()->clinic_id)
+                ->where('is_active', true)
+                ->where('is_automatic', true)
+                ->get();
+
+            foreach ($autoServices as $srv) {
+                $this->selectedServices[] = [
+                    'service_id' => $srv->id,
+                    'name' => $srv->name,
+                    'price' => $srv->price,
+                ];
+            }
+        }
+    }
+
+    // Auto-Save Draft
+    public function saveDraft()
+    {
+        Cache::put('exam_draft_' . $this->queue->id, [
+            'step' => $this->step,
+            'height' => $this->height,
+            'weight' => $this->weight,
+            'blood_pressure_systolic' => $this->blood_pressure_systolic,
+            'blood_pressure_diastolic' => $this->blood_pressure_diastolic,
+            'temperature' => $this->temperature,
+            'heart_rate' => $this->heart_rate,
+            'respiratory_rate' => $this->respiratory_rate,
+            'spo2' => $this->spo2,
+            'allergy_notes' => $this->allergy_notes,
+            'subjective' => $this->subjective,
+            'objective' => $this->objective,
+            'assessment' => $this->assessment,
+            'selectedDiagnoses' => $this->selectedDiagnoses,
+            'plan' => $this->plan,
+            'prescriptionItems' => $this->prescriptionItems,
+            'selectedServices' => $this->selectedServices,
+        ], now()->addHours(12));
     }
 
     // Navigation
     public function nextStep()
     {
+        $this->saveDraft();
         $this->validateCurrentStep();
         if ($this->step < $this->totalSteps) {
             $this->step++;
+            $this->saveDraft();
         }
     }
 
@@ -90,6 +156,7 @@ class PatientExamination extends Component
     {
         if ($this->step > 1) {
             $this->step--;
+            $this->saveDraft();
         }
     }
 
@@ -97,6 +164,7 @@ class PatientExamination extends Component
     {
         if ($step >= 1 && $step <= $this->totalSteps && $step <= $this->step) {
             $this->step = $step;
+            $this->saveDraft();
         }
     }
 
@@ -144,6 +212,7 @@ class PatientExamination extends Component
         ];
 
         $this->icdSearch = '';
+        $this->saveDraft();
     }
 
     public function removeDiagnosis($index)
@@ -155,6 +224,34 @@ class PatientExamination extends Component
         if (!empty($this->selectedDiagnoses) && !collect($this->selectedDiagnoses)->contains('type', 'primary')) {
             $this->selectedDiagnoses[0]['type'] = 'primary';
         }
+        $this->saveDraft();
+    }
+
+    // Modal ICD-10 Search
+    public function searchIcdModal()
+    {
+        if (strlen($this->icdModalSearch) < 2) {
+            $this->icdModalResults = [];
+            return;
+        }
+
+        $this->icdModalResults = Icd10Code::where(function ($q) {
+            $q->where('code', 'like', "%{$this->icdModalSearch}%")
+                ->orWhere('name_en', 'like', "%{$this->icdModalSearch}%")
+                ->orWhere('name_id', 'like', "%{$this->icdModalSearch}%");
+        })->limit(50)->get()->toArray();
+    }
+
+    public function updatedIcdModalSearch()
+    {
+        $this->searchIcdModal();
+    }
+
+    public function openIcdModal()
+    {
+        $this->icdModalSearch = '';
+        $this->icdModalResults = [];
+        $this->showIcdModal = true;
     }
 
     // Medicine Search
@@ -199,26 +296,73 @@ class PatientExamination extends Component
         ];
 
         $this->medicineSearch = '';
+        $this->saveDraft();
     }
 
     public function removeMedicine($index)
     {
         unset($this->prescriptionItems[$index]);
         $this->prescriptionItems = array_values($this->prescriptionItems);
+        $this->saveDraft();
     }
 
     public function updateQty($index, $qty)
     {
         if (isset($this->prescriptionItems[$index])) {
             $this->prescriptionItems[$index]['qty'] = max(1, (int) $qty);
+            $this->saveDraft();
         }
+    }
+
+    // Service Search
+    public function getServiceResultsProperty()
+    {
+        if (strlen($this->serviceSearch) < 2)
+            return [];
+
+        return \App\Models\Service::where('clinic_id', auth()->user()->clinic_id)
+            ->active()
+            ->where('name', 'like', "%{$this->serviceSearch}%")
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
+
+    public function addService($serviceId)
+    {
+        $service = \App\Models\Service::find($serviceId);
+        if (!$service)
+            return;
+
+        // Prevent duplicates
+        foreach ($this->selectedServices as $item) {
+            if ($item['service_id'] == $serviceId)
+                return;
+        }
+
+        $this->selectedServices[] = [
+            'service_id' => $service->id,
+            'name' => $service->name,
+            'price' => $service->price,
+        ];
+
+        $this->serviceSearch = '';
+        $this->saveDraft();
+    }
+
+    public function removeService($index)
+    {
+        unset($this->selectedServices[$index]);
+        $this->selectedServices = array_values($this->selectedServices);
+        $this->saveDraft();
     }
 
     // Billing calculation
     public function getTotalBillingProperty()
     {
         $medicineTotal = collect($this->prescriptionItems)->sum(fn($item) => $item['price'] * $item['qty']);
-        return $this->doctorFee + $medicineTotal;
+        $serviceTotal = collect($this->selectedServices)->sum('price');
+        return $medicineTotal + $serviceTotal;
     }
 
     // Save everything
@@ -293,14 +437,6 @@ class PatientExamination extends Component
                 'status' => 'unpaid',
             ]);
 
-            // Doctor fee item
-            BillingItem::create([
-                'billing_id' => $billing->id,
-                'name' => 'Jasa Dokter',
-                'qty' => 1,
-                'unit_price' => $this->doctorFee,
-            ]);
-
             // Medicine items
             foreach ($this->prescriptionItems as $item) {
                 BillingItem::create([
@@ -311,11 +447,24 @@ class PatientExamination extends Component
                 ]);
             }
 
+            // Additional Service items
+            foreach ($this->selectedServices as $item) {
+                BillingItem::create([
+                    'billing_id' => $billing->id,
+                    'name' => 'Tindakan: ' . $item['name'],
+                    'qty' => 1,
+                    'unit_price' => $item['price'],
+                ]);
+            }
+
             $billing->recalculate();
 
             // 5. Update queue status
             $this->queue->update(['status' => 'completed']);
         });
+
+        // Clear Draft
+        Cache::forget('exam_draft_' . $this->queue->id);
 
         session()->flash('success', 'Pemeriksaan berhasil disimpan!');
         return redirect()->route('doctor.dashboard');

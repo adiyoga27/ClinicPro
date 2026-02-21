@@ -213,6 +213,20 @@
                                     </div>
                                 </div>
 
+                                @if($record->billing && $record->billing->items->where('name', 'like', 'Tindakan:%')->count() > 0)
+                                    <div>
+                                        <p class="text-xs font-bold text-surface-400 mb-1">Jasa & Tindakan Medis</p>
+                                        <div class="bg-surface-800/30 rounded-xl border border-white/5 overflow-hidden p-3 mb-4 space-y-2">
+                                            @foreach($record->billing->items->where('name', 'like', 'Tindakan:%') as $item)
+                                                <div class="flex items-center justify-between text-sm">
+                                                    <span class="text-surface-200">{{ str_replace('Tindakan: ', '', $item->name) }}</span>
+                                                    <span class="text-surface-400 font-mono text-xs">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
                                 @if($record->prescription && $record->prescription->items->count() > 0)
                                     <div>
                                         <p class="text-xs font-bold text-surface-400 mb-1">Resep Obat</p>

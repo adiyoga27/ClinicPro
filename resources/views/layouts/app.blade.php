@@ -15,15 +15,15 @@
     @livewireStyles
 </head>
 
-<body class="bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-surface-50 to-surface-100 dark:bg-none dark:bg-surface-950 text-surface-900 dark:text-surface-100 font-sans antialiased min-h-screen">
+<body class="bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-100 font-sans antialiased min-h-screen">
     <!-- Sidebar + Content -->
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside id="sidebar"
-            class="fixed inset-y-0 left-0 z-30 w-64 bg-white/70 dark:bg-surface-900/80 backdrop-blur-3xl border-r border-white/60 dark:border-white/5 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] dark:shadow-none transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+            class="fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-surface-900/80 dark:backdrop-blur-xl border-r border-surface-200 dark:border-white/5 shadow-sm dark:shadow-none transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="flex flex-col h-full">
                 <!-- Logo -->
-                <div class="flex items-center gap-3 px-6 h-16 border-b border-surface-200/50 dark:border-white/5">
+                <div class="flex items-center gap-3 px-6 h-16 border-b border-surface-200 dark:border-white/5">
                     <div
                         class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center">
                         <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -41,7 +41,7 @@
                 </nav>
 
                 <!-- User Info -->
-                <div class="px-4 py-3 border-t border-surface-200/50 dark:border-white/5">
+                <div class="px-4 py-3 border-t border-surface-200 dark:border-white/5">
                     <div class="flex items-center gap-3">
                         <div
                             class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500/30 to-accent-500/30 flex items-center justify-center text-sm font-semibold text-primary-300">
@@ -56,7 +56,7 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit"
-                                class="p-1.5 rounded-xl text-surface-500 hover:text-danger-500 hover:bg-surface-900/5 dark:hover:bg-surface-800 transition-all hover:-translate-y-0.5"
+                                class="p-1.5 rounded-lg text-surface-400 hover:text-danger-600 dark:hover:text-danger-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                                 title="Logout">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -77,10 +77,10 @@
         <main class="flex-1 lg:ml-64">
             <!-- Top Bar -->
             <header
-                class="sticky top-0 z-10 h-16 bg-white/70 dark:bg-surface-950/80 backdrop-blur-3xl border-b border-white/60 dark:border-white/5 shadow-[0_4px_24px_-12px_rgba(0,0,0,0.06)] dark:shadow-none flex items-center justify-between px-4 lg:px-6">
+                class="sticky top-0 z-10 h-16 bg-white/80 dark:bg-surface-950/80 backdrop-blur-md dark:backdrop-blur-xl border-b border-surface-200 dark:border-white/5 flex items-center justify-between px-4 lg:px-6">
                 <div class="flex items-center gap-3">
                     <button onclick="toggleSidebar()"
-                        class="lg:hidden p-2 rounded-lg text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors">
+                        class="lg:hidden p-2 rounded-lg text-surface-400 hover:text-surface-900 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -92,7 +92,7 @@
                     {{ $actions ?? '' }}
                     <form method="POST" action="{{ route('theme.toggle') }}" class="ml-2">
                         @csrf
-                        <button type="submit" class="p-2 rounded-xl text-surface-500 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-500 hover:bg-surface-900/5 dark:hover:bg-surface-800 transition-all hover:-translate-y-0.5 shadow-sm dark:shadow-none border border-white dark:border-transparent" title="Toggle Theme">
+                        <button type="submit" class="p-2 rounded-lg text-surface-400 hover:text-primary-600 dark:hover:text-primary-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors" title="Toggle Theme">
                             @if(auth()->check() && auth()->user()->theme === 'dark')
                                 <!-- Moon (Dark Mode active, click to light) -->
                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

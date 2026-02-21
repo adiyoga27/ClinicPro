@@ -104,11 +104,19 @@
             <p class="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-surface-600">Sistem</p>
 
             <a href="{{ route('admin.satusehat') }}"
-                class="{{ $linkClass }} {{ request()->routeIs('admin.satusehat*') ? $activeClass : $inactiveClass }}">
+                class="{{ $linkClass }} {{ request()->routeIs('admin.satusehat') && !request()->routeIs('admin.satusehat.logs') ? $activeClass : $inactiveClass }}">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                 </svg>
                 Satu Sehat
+            </a>
+
+            <a href="{{ route('admin.satusehat.logs') }}"
+                class="{{ $linkClass }} {{ request()->routeIs('admin.satusehat.logs*') ? $activeClass : $inactiveClass }}">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+                Log Integrasi
             </a>
 
             <a href="{{ route('admin.staff') }}"

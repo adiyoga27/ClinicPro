@@ -56,7 +56,7 @@ class BillingManager extends Component
         return collect($this->paymentRows)->sum(fn($row) => (float)($row['amount'] ?? 0));
     }
 
-    public function processPayment(): void
+    public function processPayment(\App\Services\SatuSehatService $satuSehatService): void
     {
         $this->validate([
             'paymentRows.*.method' => 'required|in:cash,debit,qris,bpjs,deposit',
@@ -114,9 +114,44 @@ class BillingManager extends Component
             ]);
         });
 
-        session()->flash('success', 'Pembayaran berhasil diproses.');
+        // 4. Sync Satu Sehat Interoperabilitas (Encounter & Condition)
+        $syncMessage = '';
+        if ($this->selectedBilling->medical_record_id) {
+            $medicalRecord = \App\Models\MedicalRecord::with(['patient', 'diagnoses.icd10Code', 'doctor'])->find($this->selectedBilling->medical_record_id);
+            if ($medicalRecord) {
+                try {
+                    $results = $satuSehatService->syncMedicalRecord($medicalRecord);
+                    $syncMessage = ' Data kunjungan berhasil dikirim ke Satu Sehat (Interoperabilitas).';
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Satu Sehat Sync Error: ' . $e->getMessage());
+                    $syncMessage = ' Namun terjadi kendala saat sinkronisasi API Satu Sehat.';
+                }
+            }
+        }
+
+        session()->flash('success', 'Pembayaran berhasil diproses.' . $syncMessage);
         $this->showModal = false;
         $this->selectedBilling = null;
+    }
+
+    public function retrySatuSehatSync(int $billingId, \App\Services\SatuSehatService $satuSehatService): void
+    {
+        $billing = Billing::with(['medicalRecord.patient', 'medicalRecord.diagnoses.icd10Code', 'medicalRecord.doctor'])
+            ->where('clinic_id', auth()->user()->clinic_id)
+            ->findOrFail($billingId);
+
+        if (!$billing->medicalRecord) {
+            session()->flash('error', 'Tagihan ini tidak terkait dengan rekam medis.');
+            return;
+        }
+
+        try {
+            $satuSehatService->syncMedicalRecord($billing->medicalRecord);
+            session()->flash('success', 'Berhasil melakukan sinkronisasi ulang ke Satu Sehat.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Satu Sehat Retry Sync Error: ' . $e->getMessage());
+            session()->flash('error', 'Gagal melakukan sinkronisasi ulang. Silakan cek Log Integrasi.');
+        }
     }
 
     public function render()

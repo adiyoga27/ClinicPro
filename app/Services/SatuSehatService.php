@@ -251,10 +251,42 @@ class SatuSehatService
             ],
             'gender' => $patient->gender === 'L' ? 'male' : 'female',
             'birthDate' => $patient->birth_date?->format('Y-m-d'),
+            'multipleBirthInteger' => 0,
             'address' => [
                 [
                     'use' => 'home',
                     'line' => [$patient->address ?? ''],
+                    'extension' => [
+                        [
+                            'url' => 'https://fhir.kemkes.go.id/r4/StructureDefinition/administrativeCode',
+                            'extension' => [
+                                [
+                                    'url' => 'province',
+                                    'valueCode' => '31' // Dummy DKI Jakarta
+                                ],
+                                [
+                                    'url' => 'city',
+                                    'valueCode' => '3171' // Dummy Jakarta Pusat
+                                ],
+                                [
+                                    'url' => 'district',
+                                    'valueCode' => '317101' // Dummy Gambir
+                                ],
+                                [
+                                    'url' => 'village',
+                                    'valueCode' => '3171011001' // Dummy Gambir
+                                ],
+                                [
+                                    'url' => 'rt',
+                                    'valueCode' => '1'
+                                ],
+                                [
+                                    'url' => 'rw',
+                                    'valueCode' => '1'
+                                ]
+                            ]
+                        ]
+                    ]
                 ],
             ],
         ];
@@ -265,9 +297,58 @@ class SatuSehatService
      */
     public function buildEncounterResource($medicalRecord): array
     {
-        return [
+        $medicalRecord->loadMissing('diagnoses.icd10Code');
+        $diagnoses = [];
+        foreach ($medicalRecord->diagnoses as $idx => $diagnosis) {
+            $diagnoses[] = [
+                'condition' => [
+                    'display' => $diagnosis->icd10Code->name_en ?? 'Diagnosis'
+                ],
+                'use' => [
+                    'coding' => [
+                        [
+                            'system' => 'http://terminology.hl7.org/CodeSystem/diagnosis-role',
+                            'code' => 'DD',
+                            'display' => 'Discharge diagnosis'
+                        ]
+                    ]
+                ],
+                'rank' => $idx + 1
+            ];
+        }
+
+        $payload = [
             'resourceType' => 'Encounter',
+            'identifier' => [
+                [
+                    'system' => 'http://sys-ids.kemkes.go.id/encounter/' . $this->organizationId,
+                    'value' => 'ENC-' . $medicalRecord->id
+                ]
+            ],
             'status' => 'finished',
+            'statusHistory' => [
+                [
+                    'status' => 'arrived',
+                    'period' => [
+                        'start' => $medicalRecord->created_at->toIso8601String(),
+                        'end' => $medicalRecord->created_at->addMinutes(5)->toIso8601String(),
+                    ]
+                ],
+                [
+                    'status' => 'in-progress',
+                    'period' => [
+                        'start' => $medicalRecord->created_at->addMinutes(5)->toIso8601String(),
+                        'end' => $medicalRecord->created_at->addMinutes(20)->toIso8601String(),
+                    ]
+                ],
+                [
+                    'status' => 'finished',
+                    'period' => [
+                        'start' => $medicalRecord->created_at->addMinutes(20)->toIso8601String(),
+                        'end' => $medicalRecord->created_at->addMinutes(30)->toIso8601String(),
+                    ]
+                ]
+            ],
             'class' => [
                 'system' => 'http://terminology.hl7.org/CodeSystem/v3-ActCode',
                 'code' => 'AMB',
@@ -300,6 +381,12 @@ class SatuSehatService
                 ],
             ],
         ];
+
+        if (!empty($diagnoses)) {
+            $payload['diagnosis'] = $diagnoses;
+        }
+
+        return $payload;
     }
 
     /**
@@ -360,8 +447,34 @@ class SatuSehatService
             $patientPayload = $this->buildPatientResource($patient);
             $patientResult = $this->sendResource('Patient', $patientPayload);
 
+            // Handle duplicate error by fetching existing patient
+            if (!$patientResult['success'] && str_contains(json_encode($patientResult), 'Found duplicate: Patient')) {
+                $existing = $this->getPatientByNik($patient->nik);
+                if ($existing['success'] && isset($existing['data']['id'])) {
+                    $patientResult = [
+                        'success' => true,
+                        'data' => $existing['data'],
+                        'status' => 200,
+                        'note' => 'Fetched existing duplicate patient'
+                    ];
+                }
+            }
+
+            \App\Models\SatuSehatLog::create([
+                'clinic_id' => $medicalRecord->clinic_id,
+                'medical_record_id' => $medicalRecord->id,
+                'resource_type' => 'Patient',
+                'payload' => $patientPayload,
+                'response' => $patientResult['data'] ?? ($patientResult['error'] ?? []),
+                'status' => $patientResult['success'] ? 'success' : 'failed',
+                'last_attempted_at' => now(),
+                'error_message' => $patientResult['success'] ? null : ($patientResult['error'] ?? 'Unknown error'),
+            ]);
+
             if ($patientResult['success'] && isset($patientResult['data']['id'])) {
                 $patient->update(['satu_sehat_id' => $patientResult['data']['id']]);
+                $patient->satu_sehat_id = $patientResult['data']['id'];
+                $medicalRecord->patient->satu_sehat_id = $patientResult['data']['id']; // Ensure relations hold the ID for Encounter logic
             }
             $results['patient'] = $patientResult;
         }
@@ -369,6 +482,17 @@ class SatuSehatService
         // 2. Sync Encounter
         $encounterPayload = $this->buildEncounterResource($medicalRecord);
         $encounterResult = $this->sendResource('Encounter', $encounterPayload);
+
+        \App\Models\SatuSehatLog::create([
+            'clinic_id' => $medicalRecord->clinic_id,
+            'medical_record_id' => $medicalRecord->id,
+            'resource_type' => 'Encounter',
+            'payload' => $encounterPayload,
+            'response' => $encounterResult['data'] ?? ($encounterResult['error'] ?? []),
+            'status' => $encounterResult['success'] ? 'success' : 'failed',
+            'last_attempted_at' => now(),
+            'error_message' => $encounterResult['success'] ? null : ($encounterResult['error'] ?? 'Unknown error'),
+        ]);
 
         $encounterId = null;
         if ($encounterResult['success'] && isset($encounterResult['data']['id'])) {
@@ -383,6 +507,18 @@ class SatuSehatService
             foreach ($medicalRecord->diagnoses as $diagnosis) {
                 $conditionPayload = $this->buildConditionResource($diagnosis, $encounterId);
                 $conditionResult = $this->sendResource('Condition', $conditionPayload);
+
+                \App\Models\SatuSehatLog::create([
+                    'clinic_id' => $medicalRecord->clinic_id,
+                    'medical_record_id' => $medicalRecord->id,
+                    'resource_type' => 'Condition',
+                    'payload' => $conditionPayload,
+                    'response' => $conditionResult['data'] ?? ($conditionResult['error'] ?? []),
+                    'status' => $conditionResult['success'] ? 'success' : 'failed',
+                    'last_attempted_at' => now(),
+                    'error_message' => $conditionResult['success'] ? null : ($conditionResult['error'] ?? 'Unknown error'),
+                ]);
+
                 $results['conditions'][] = $conditionResult;
             }
         }

@@ -81,6 +81,33 @@
                                         Belum Bayar
                                     </span>
                                 @endif
+
+                                @if($billing->medicalRecord && $billing->medicalRecord->satu_sehat_encounter_id)
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-success-50 dark:bg-success-500/10 text-success-700 dark:text-success-400 border border-success-200 dark:border-success-500/20 mt-2">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        SS: Tersinkron
+                                    </span>
+                                @elseif($billing->medicalRecord && $billing->status === 'paid')
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-danger-50 dark:bg-danger-500/10 text-danger-700 dark:text-danger-400 border border-danger-200 dark:border-danger-500/20">
+                                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            SS: Gagal
+                                        </span>
+                                        <button wire:click="retrySatuSehatSync({{ $billing->id }})" wire:loading.attr="disabled" class="p-1 text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" title="Coba Sinkronisasi Ulang">
+                                            <svg wire:loading.remove wire:target="retrySatuSehatSync({{ $billing->id }})" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <svg wire:loading wire:target="retrySatuSehatSync({{ $billing->id }})" class="w-4 h-4 animate-spin text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                @endif
                             </td>
                             <td class="px-6 py-5 text-right">
                                 <span class="text-sm font-bold text-surface-900 dark:text-white">Rp {{ number_format($billing->total_amount, 0, ',', '.') }}</span>
@@ -132,10 +159,10 @@
                 <div class="px-5 py-4 sm:px-6 sm:py-5 border-b border-surface-200 dark:border-white/10 flex items-start sm:items-center justify-between bg-surface-50 dark:bg-surface-900/50 gap-4">
                     <div class="space-y-1">
                         <h3 class="text-lg sm:text-xl font-bold text-surface-900 dark:text-white tracking-tight">Proses Pembayaran</h3>
-                        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-surface-500 dark:text-surface-400">
-                            <span class="font-medium text-surface-700 dark:text-surface-300">{{ $selectedBilling->patient->name }}</span>
-                            <span class="w-1 h-1 bg-surface-300 dark:bg-surface-600 rounded-full hidden sm:block"></span>
-                            <span>RM: {{ $selectedBilling->patient->medical_record_no }}</span>
+                        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-surface-500 dark:text-surface-300">
+                            <span class="font-medium text-surface-700 dark:text-white">{{ $selectedBilling->patient->name }}</span>
+                            <span class="w-1 h-1 bg-surface-300 dark:bg-surface-500 rounded-full hidden sm:block"></span>
+                            <span class="dark:text-surface-200">RM: {{ $selectedBilling->patient->medical_record_no }}</span>
                         </div>
                     </div>
                     <button wire:click="$set('showModal', false)" class="p-2 bg-white dark:bg-surface-800 hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-500 dark:text-surface-400 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/50 shadow-sm border border-surface-200 dark:border-transparent">
@@ -150,11 +177,11 @@
                     <div class="space-y-4 sm:space-y-6">
                         <!-- Invoice Items -->
                         <div class="bg-surface-50 dark:bg-surface-950/50 rounded-2xl p-4 sm:p-6 border border-surface-200 dark:border-white/5 shadow-sm dark:shadow-none">
-                            <h4 class="text-xs font-bold text-surface-500 uppercase tracking-widest mb-4">Rincian Tagihan</h4>
+                            <h4 class="text-xs font-bold text-surface-500 dark:text-surface-300 uppercase tracking-widest mb-4">Rincian Tagihan</h4>
                             <div class="space-y-3 relative">
                                 @foreach($selectedBilling->items as $item)
                                     <div class="flex flex-col sm:flex-row justify-between text-sm group gap-1 sm:gap-0">
-                                        <span class="text-surface-700 dark:text-surface-300">{{ $item->name }} <span class="text-surface-500 text-xs ml-1 sm:ml-2 font-semibold">x{{ $item->qty }}</span></span>
+                                        <span class="text-surface-700 dark:text-white">{{ $item->name }} <span class="text-surface-500 dark:text-surface-400 text-xs ml-1 sm:ml-2 font-semibold">x{{ $item->qty }}</span></span>
                                         <span class="font-bold text-surface-900 dark:text-white whitespace-nowrap">Rp {{ number_format($item->unit_price * $item->qty, 0, ',', '.') }}</span>
                                     </div>
                                 @endforeach

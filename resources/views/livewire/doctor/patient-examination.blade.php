@@ -49,7 +49,7 @@
             {{ strtoupper(substr($patient->name, 0, 1)) }}
         </div>
         <div class="flex-1">
-            <p class="text-sm font-bold text-surface-900 dark:text-surface-100">{{ $patient->name }}</p>
+            <p class="text-sm font-bold text-surface-900 dark:text-white">{{ $patient->name }}</p>
             <p class="text-xs font-semibold text-surface-500">No. RM: {{ $patient->medical_record_no ?? '-' }} · Antrian
                 #{{ $queue->queue_no }}</p>
         </div>
@@ -65,54 +65,54 @@
         {{-- ═══ Step 1: Vital Signs ═══ --}}
         @if($step === 1)
             <div>
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">Screening Umum</h3>
-                <p class="text-sm font-medium text-surface-600 dark:text-surface-500 mb-6">Masukkan data vital signs pasien</p>
+                <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-1">Screening Umum</h3>
+                <p class="text-sm font-medium text-surface-600 dark:text-surface-300 mb-6">Masukkan data vital signs pasien</p>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Tinggi Badan (cm)</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Tinggi Badan (cm)</label>
                         <input type="number" step="0.1" wire:model="height" placeholder="165.0"
-                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Berat Badan (kg)</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Berat Badan (kg)</label>
                         <input type="number" step="0.1" wire:model="weight" placeholder="65.0"
-                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Tekanan Darah (mmHg)</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Tekanan Darah (mmHg)</label>
                         <div class="flex items-center gap-2">
                             <input type="number" wire:model="blood_pressure_systolic" placeholder="120"
-                                class="flex-1 px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
-                            <span class="text-surface-400 dark:text-surface-500 font-black">/</span>
+                                class="flex-1 px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
+                            <span class="text-surface-400 dark:text-surface-300 font-black">/</span>
                             <input type="number" wire:model="blood_pressure_diastolic" placeholder="80"
-                                class="flex-1 px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                                class="flex-1 px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Suhu (°C)</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Suhu (°C)</label>
                         <input type="number" step="0.1" wire:model="temperature" placeholder="36.5"
-                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Denyut Nadi (bpm)</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Denyut Nadi (bpm)</label>
                         <input type="number" wire:model="heart_rate" placeholder="80"
-                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Laju Napas (/min)</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Laju Napas (/min)</label>
                         <input type="number" wire:model="respiratory_rate" placeholder="18"
-                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">SpO2 (%)</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">SpO2 (%)</label>
                         <input type="number" wire:model="spo2" placeholder="98"
-                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Catatan Alergi</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Catatan Alergi</label>
                         <input type="text" wire:model="allergy_notes" placeholder="Contoh: alergi penisilin, seafood..."
-                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                            class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
                     </div>
                 </div>
             </div>
@@ -121,15 +121,15 @@
         {{-- ═══ Step 2: Subjective (Keluhan) ═══ --}}
         @if($step === 2)
             <div>
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">Keluhan Pasien (Subjective)</h3>
-                <p class="text-sm font-medium text-surface-600 dark:text-surface-500 mb-6">Catat keluhan utama pasien</p>
+                <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-1">Keluhan Pasien (Subjective)</h3>
+                <p class="text-sm font-medium text-surface-600 dark:text-surface-300 mb-6">Catat keluhan utama pasien</p>
 
                 <div>
-                    <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Keluhan Utama <span
+                    <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Keluhan Utama <span
                             class="text-danger-600 dark:text-danger-500">*</span></label>
                     <textarea wire:model="subjective" rows="5"
                         placeholder="Contoh: pasien mengeluh demam selama 3 hari, disertai batuk dan pilek..."
-                        class="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all resize-none placeholder-surface-400 dark:placeholder-surface-500"></textarea>
+                        class="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all resize-none placeholder-surface-400 dark:placeholder-surface-400"></textarea>
                     @error('subjective') <p class="text-xs font-bold text-danger-600 dark:text-danger-500 mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
@@ -138,31 +138,31 @@
         {{-- ═══ Step 3: Objective & Diagnosis ═══ --}}
         @if($step === 3)
             <div>
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">Pemeriksaan & Diagnosis</h3>
-                <p class="text-sm font-medium text-surface-600 dark:text-surface-500 mb-6">Hasil pemeriksaan fisik dan diagnosis ICD-10</p>
+                <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-1">Pemeriksaan & Diagnosis</h3>
+                <p class="text-sm font-medium text-surface-600 dark:text-surface-300 mb-6">Hasil pemeriksaan fisik dan diagnosis ICD-10</p>
 
                 <div class="space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Pemeriksaan Fisik
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Pemeriksaan Fisik
                             (Objective)</label>
                         <textarea wire:model="objective" rows="3" placeholder="Hasil pemeriksaan fisik..."
-                            class="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all resize-none placeholder-surface-400 dark:placeholder-surface-500"></textarea>
+                            class="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all resize-none placeholder-surface-400 dark:placeholder-surface-400"></textarea>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Assessment</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Assessment</label>
                         <textarea wire:model="assessment" rows="2" placeholder="Penilaian / kesimpulan klinis..."
-                            class="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all resize-none placeholder-surface-400 dark:placeholder-surface-500"></textarea>
+                            class="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all resize-none placeholder-surface-400 dark:placeholder-surface-400"></textarea>
                     </div>
 
                     {{-- ICD-10 Search --}}
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Diagnosis ICD-10</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Diagnosis ICD-10</label>
                         <div class="relative flex gap-2">
                             <div class="flex-1 relative">
                                 <input type="text" wire:model.live.debounce.300ms="icdSearch"
                                     placeholder="Ketik langsung kode / nama penyakit (misal: demam)..."
-                                    class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                                    class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
 
                                 @if(count($this->icdResults) > 0)
                                     <div
@@ -193,7 +193,7 @@
                                     <div
                                         class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200 dark:border-white/5">
                                         <span
-                                            class="px-2 py-0.5 rounded text-xs font-bold {{ $diag['type'] === 'primary' ? 'bg-accent-100 dark:bg-accent-500/10 text-accent-700 dark:text-accent-400' : 'bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-400' }}">
+                                            class="px-2 py-0.5 rounded text-xs font-bold {{ $diag['type'] === 'primary' ? 'bg-accent-100 dark:bg-accent-500/10 text-accent-700 dark:text-accent-400' : 'bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200' }}">
                                             {{ $diag['type'] === 'primary' ? 'Utama' : 'Sekunder' }}
                                         </span>
                                         <span
@@ -218,25 +218,25 @@
         {{-- ═══ Step 4: Plan & Prescriptions ═══ --}}
         @if($step === 4)
             <div>
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">Penanganan & Resep Obat</h3>
-                <p class="text-sm font-medium text-surface-600 dark:text-surface-500 mb-6">Rencana penanganan dan resep obat</p>
+                <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-1">Penanganan & Resep Obat</h3>
+                <p class="text-sm font-medium text-surface-600 dark:text-surface-300 mb-6">Rencana penanganan dan resep obat</p>
 
                 <div class="space-y-5">
                     <div>
-                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Rencana Penanganan (Plan)</label>
+                        <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Rencana Penanganan (Plan)</label>
                         <textarea wire:model="plan" rows="3" placeholder="Rencana terapi, tindakan, edukasi pasien..."
-                            class="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all resize-none placeholder-surface-400 dark:placeholder-surface-500"></textarea>
+                            class="w-full px-4 py-3 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all resize-none placeholder-surface-400 dark:placeholder-surface-400"></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         {{-- Service Search --}}
                         <div>
-                            <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Tambah Tindakan / Jasa</label>
+                            <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Tambah Tindakan / Jasa</label>
                             <div class="relative flex gap-2">
                                 <div class="flex-1 relative">
                                     <input type="text" wire:model.live.debounce.300ms="serviceSearch"
                                         placeholder="Cari tindakan kesehatan..."
-                                        class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                                        class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
 
                                     @if(count($this->serviceResults) > 0)
                                         <div
@@ -244,7 +244,7 @@
                                             @foreach($this->serviceResults as $srv)
                                                 <button wire:click="addService({{ $srv['id'] }})" type="button"
                                                     class="w-full px-4 py-2.5 text-left hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors flex items-center justify-between border-b border-surface-100 dark:border-white/5 last:border-0">
-                                                    <span class="text-sm font-bold text-surface-900 dark:text-surface-200">{{ $srv['name'] }}</span>
+                                                    <span class="text-sm font-bold text-surface-900 dark:text-white">{{ $srv['name'] }}</span>
                                                     <span class="text-sm font-black text-accent-600 dark:text-accent-400">Rp
                                                         {{ number_format($srv['price'], 0, ',', '.') }}</span>
                                                 </button>
@@ -266,8 +266,8 @@
                                     @foreach($selectedServices as $index => $item)
                                         <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200 dark:border-white/5 shadow-sm dark:shadow-none">
                                             <div>
-                                                <p class="text-sm font-bold text-surface-900 dark:text-surface-200">{{ $item['name'] }}</p>
-                                                <p class="text-xs font-semibold text-surface-600 dark:text-surface-500">Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
+                                                <p class="text-sm font-bold text-surface-900 dark:text-white">{{ $item['name'] }}</p>
+                                                <p class="text-xs font-semibold text-surface-600 dark:text-surface-300">Rp {{ number_format($item['price'], 0, ',', '.') }}</p>
                                             </div>
                                             <button wire:click="removeService({{ $index }})"
                                                 class="text-surface-400 dark:text-surface-600 hover:text-danger-600 dark:hover:text-danger-500 transition-colors p-1 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700">
@@ -284,12 +284,12 @@
 
                         {{-- Medicine Search --}}
                         <div>
-                            <label class="block text-xs font-bold text-surface-700 dark:text-surface-400 mb-1.5">Tambah Obat</label>
+                            <label class="block text-xs font-bold text-surface-700 dark:text-surface-200 mb-1.5">Tambah Obat</label>
                             <div class="relative flex gap-2">
                                 <div class="flex-1 relative">
                                     <input type="text" wire:model.live.debounce.300ms="medicineSearch"
                                         placeholder="Cari obat (misal: paracetamol)..."
-                                        class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-500">
+                                        class="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm font-medium focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all placeholder-surface-400 dark:placeholder-surface-400">
 
                                     @if(count($this->medicineResults) > 0)
                                         <div
@@ -298,8 +298,8 @@
                                                 <button wire:click="addMedicine({{ $med['id'] }})" type="button"
                                                     class="w-full px-4 py-2.5 text-left hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors flex items-center justify-between border-b border-surface-100 dark:border-white/5 last:border-0">
                                                     <div>
-                                                        <p class="text-sm font-bold text-surface-900 dark:text-surface-200">{{ $med['name'] }}</p>
-                                                        <p class="text-xs font-semibold text-surface-600 dark:text-surface-500">{{ $med['category'] }} · {{ $med['unit'] }}</p>
+                                                        <p class="text-sm font-bold text-surface-900 dark:text-white">{{ $med['name'] }}</p>
+                                                        <p class="text-xs font-semibold text-surface-600 dark:text-surface-300">{{ $med['category'] }} · {{ $med['unit'] }}</p>
                                                     </div>
                                                     <span class="text-sm font-black text-accent-600 dark:text-accent-400">Rp
                                                         {{ number_format($med['price'], 0, ',', '.') }}</span>
@@ -324,7 +324,7 @@
                             <table class="w-full bg-white dark:bg-transparent">
                                 <thead>
                                     <tr
-                                        class="text-left text-xs text-surface-600 dark:text-surface-500 uppercase tracking-wider border-b border-surface-200 dark:border-white/5 bg-surface-50/50 dark:bg-surface-800/50">
+                                        class="text-left text-xs text-surface-600 dark:text-surface-300 uppercase tracking-wider border-b border-surface-200 dark:border-white/5 bg-surface-50/50 dark:bg-surface-800/50">
                                         <th class="px-4 py-2.5 font-bold">Obat</th>
                                         <th class="px-4 py-2.5 font-bold">Dosis</th>
                                         <th class="px-4 py-2.5 font-bold">Frekuensi</th>
@@ -338,31 +338,31 @@
                                     @foreach($prescriptionItems as $index => $item)
                                         <tr class="hover:bg-surface-50 dark:hover:bg-surface-800/30 transition-colors">
                                             <td class="px-4 py-2.5">
-                                                <p class="text-sm font-bold text-surface-900 dark:text-surface-200">{{ $item['drug_name'] }}</p>
-                                                <p class="text-xs font-semibold text-surface-600 dark:text-surface-500">Rp
+                                                <p class="text-sm font-bold text-surface-900 dark:text-white">{{ $item['drug_name'] }}</p>
+                                                <p class="text-xs font-semibold text-surface-600 dark:text-surface-300">Rp
                                                     {{ number_format($item['price'], 0, ',', '.') }}/{{ $item['unit'] }}</p>
                                             </td>
                                             <td class="px-4 py-2.5">
                                                 <input type="text" wire:model="prescriptionItems.{{ $index }}.dosage"
                                                     placeholder="500mg"
-                                                    class="w-full px-2 py-1.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-lg text-surface-900 dark:text-surface-200 text-xs focus:border-primary-500 transition-all placeholder-surface-400 dark:placeholder-surface-500 font-medium">
+                                                    class="w-full px-2 py-1.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-lg text-surface-900 dark:text-white text-xs focus:border-primary-500 transition-all placeholder-surface-400 dark:placeholder-surface-400 font-medium">
                                             </td>
                                             <td class="px-4 py-2.5">
                                                 <input type="text" wire:model="prescriptionItems.{{ $index }}.frequency"
                                                     placeholder="3x sehari"
-                                                    class="w-full px-2 py-1.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-lg text-surface-900 dark:text-surface-200 text-xs focus:border-primary-500 transition-all placeholder-surface-400 dark:placeholder-surface-500 font-medium">
+                                                    class="w-full px-2 py-1.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-lg text-surface-900 dark:text-white text-xs focus:border-primary-500 transition-all placeholder-surface-400 dark:placeholder-surface-400 font-medium">
                                             </td>
                                             <td class="px-4 py-2.5">
                                                 <input type="text" wire:model="prescriptionItems.{{ $index }}.duration"
                                                     placeholder="3 hari"
-                                                    class="w-full px-2 py-1.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-lg text-surface-900 dark:text-surface-200 text-xs focus:border-primary-500 transition-all placeholder-surface-400 dark:placeholder-surface-500 font-medium">
+                                                    class="w-full px-2 py-1.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-lg text-surface-900 dark:text-white text-xs focus:border-primary-500 transition-all placeholder-surface-400 dark:placeholder-surface-400 font-medium">
                                             </td>
                                             <td class="px-4 py-2.5">
                                                 <input type="number" min="1" wire:model.live="prescriptionItems.{{ $index }}.qty"
-                                                    class="w-full px-2 py-1.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-lg text-surface-900 dark:text-surface-200 text-xs text-center focus:border-primary-500 transition-all font-medium">
+                                                    class="w-full px-2 py-1.5 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-white/10 rounded-lg text-surface-900 dark:text-white text-xs text-center focus:border-primary-500 transition-all font-medium">
                                             </td>
                                             <td class="px-4 py-2.5 text-right">
-                                                <span class="text-sm font-black text-surface-900 dark:text-surface-200">Rp
+                                                <span class="text-sm font-black text-surface-900 dark:text-white">Rp
                                                     {{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}</span>
                                             </td>
                                             <td class="px-4 py-2.5">
@@ -387,20 +387,20 @@
                         <div class="space-y-2">
                             @foreach($selectedServices as $item)
                                 <div class="flex justify-between text-sm">
-                                    <span class="font-medium text-surface-600 dark:text-surface-400">{{ $item['name'] }}</span>
-                                    <span class="font-bold text-surface-900 dark:text-surface-200">Rp
+                                    <span class="font-medium text-surface-600 dark:text-surface-200">{{ $item['name'] }}</span>
+                                    <span class="font-bold text-surface-900 dark:text-white">Rp
                                         {{ number_format($item['price'], 0, ',', '.') }}</span>
                                 </div>
                             @endforeach
                             @foreach($prescriptionItems as $item)
                                 <div class="flex justify-between text-sm">
-                                    <span class="font-medium text-surface-600 dark:text-surface-400">{{ $item['drug_name'] }} × {{ $item['qty'] }}</span>
-                                    <span class="font-bold text-surface-900 dark:text-surface-200">Rp
+                                    <span class="font-medium text-surface-600 dark:text-surface-200">{{ $item['drug_name'] }} × {{ $item['qty'] }}</span>
+                                    <span class="font-bold text-surface-900 dark:text-white">Rp
                                         {{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}</span>
                                 </div>
                             @endforeach
                             <div class="border-t border-primary-200 dark:border-white/10 pt-2 mt-2 flex justify-between">
-                                <span class="text-sm font-black text-surface-900 dark:text-surface-200">Total Estimasi</span>
+                                <span class="text-sm font-black text-surface-900 dark:text-white">Total Estimasi</span>
                                 <span
                                     class="text-lg font-black bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">
                                     Rp {{ number_format($this->totalBilling, 0, ',', '.') }}
@@ -415,36 +415,36 @@
         {{-- ═══ Step 5: Summary ═══ --}}
         @if($step === 5)
             <div>
-                <h3 class="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">Ringkasan Pemeriksaan</h3>
-                <p class="text-sm font-medium text-surface-600 dark:text-surface-500 mb-6">Periksa kembali data sebelum menyimpan</p>
+                <h3 class="text-lg font-bold text-surface-900 dark:text-white mb-1">Ringkasan Pemeriksaan</h3>
+                <p class="text-sm font-medium text-surface-600 dark:text-surface-300 mb-6">Periksa kembali data sebelum menyimpan</p>
 
                 <div class="space-y-4">
                     {{-- Vital Signs Summary --}}
                     <div class="p-4 rounded-xl bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200 dark:border-white/5 shadow-sm dark:shadow-none">
-                        <h4 class="text-xs font-black uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Vital Signs</h4>
+                        <h4 class="text-xs font-black uppercase tracking-wider text-surface-500 dark:text-surface-200 mb-3">Vital Signs</h4>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                             @if($height)
-                                <div><span class="font-semibold text-surface-500">TB:</span> <span class="font-bold text-surface-900 dark:text-surface-200">{{ $height }}
+                                <div><span class="font-semibold text-surface-500">TB:</span> <span class="font-bold text-surface-900 dark:text-white">{{ $height }}
                             cm</span></div> @endif
                             @if($weight)
-                                <div><span class="font-semibold text-surface-500">BB:</span> <span class="font-bold text-surface-900 dark:text-surface-200">{{ $weight }}
+                                <div><span class="font-semibold text-surface-500">BB:</span> <span class="font-bold text-surface-900 dark:text-white">{{ $weight }}
                             kg</span></div> @endif
                             @if($blood_pressure_systolic)
                                 <div><span class="font-semibold text-surface-500">TD:</span> <span
-                                        class="font-bold text-surface-900 dark:text-surface-200">{{ $blood_pressure_systolic }}/{{ $blood_pressure_diastolic }}
+                                        class="font-bold text-surface-900 dark:text-white">{{ $blood_pressure_systolic }}/{{ $blood_pressure_diastolic }}
                             mmHg</span></div> @endif
                             @if($temperature)
                                 <div><span class="font-semibold text-surface-500">Suhu:</span> <span
-                            class="font-bold text-surface-900 dark:text-surface-200">{{ $temperature }} °C</span></div> @endif
+                            class="font-bold text-surface-900 dark:text-white">{{ $temperature }} °C</span></div> @endif
                             @if($heart_rate)
                                 <div><span class="font-semibold text-surface-500">Nadi:</span> <span
-                            class="font-bold text-surface-900 dark:text-surface-200">{{ $heart_rate }} bpm</span></div> @endif
+                            class="font-bold text-surface-900 dark:text-white">{{ $heart_rate }} bpm</span></div> @endif
                             @if($respiratory_rate)
                                 <div><span class="font-semibold text-surface-500">RR:</span> <span
-                            class="font-bold text-surface-900 dark:text-surface-200">{{ $respiratory_rate }} /min</span></div> @endif
+                            class="font-bold text-surface-900 dark:text-white">{{ $respiratory_rate }} /min</span></div> @endif
                             @if($spo2)
                                 <div><span class="font-semibold text-surface-500">SpO2:</span> <span
-                            class="font-bold text-surface-900 dark:text-surface-200">{{ $spo2 }}%</span></div> @endif
+                            class="font-bold text-surface-900 dark:text-white">{{ $spo2 }}%</span></div> @endif
                             @if($allergy_notes)
                                 <div class="col-span-2"><span class="font-semibold text-surface-500">Alergi:</span> <span
                             class="font-bold text-warning-600 dark:text-warning-400">{{ $allergy_notes }}</span></div> @endif
@@ -453,28 +453,28 @@
 
                     {{-- SOAP Summary --}}
                     <div class="p-4 rounded-xl bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200 dark:border-white/5 shadow-sm dark:shadow-none">
-                        <h4 class="text-xs font-black uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">SOAP</h4>
+                        <h4 class="text-xs font-black uppercase tracking-wider text-surface-500 dark:text-surface-200 mb-3">SOAP</h4>
                         <div class="space-y-2 text-sm">
                             <div><span class="font-semibold text-surface-500">S:</span> <span
-                                    class="font-bold text-surface-900 dark:text-surface-200">{{ $subjective ?: '-' }}</span></div>
+                                    class="font-bold text-surface-900 dark:text-white">{{ $subjective ?: '-' }}</span></div>
                             <div><span class="font-semibold text-surface-500">O:</span> <span
-                                    class="font-bold text-surface-900 dark:text-surface-200">{{ $objective ?: '-' }}</span></div>
+                                    class="font-bold text-surface-900 dark:text-white">{{ $objective ?: '-' }}</span></div>
                             <div><span class="font-semibold text-surface-500">A:</span> <span
-                                    class="font-bold text-surface-900 dark:text-surface-200">{{ $assessment ?: '-' }}</span></div>
+                                    class="font-bold text-surface-900 dark:text-white">{{ $assessment ?: '-' }}</span></div>
                             <div><span class="font-semibold text-surface-500">P:</span> <span
-                                    class="font-bold text-surface-900 dark:text-surface-200">{{ $plan ?: '-' }}</span></div>
+                                    class="font-bold text-surface-900 dark:text-white">{{ $plan ?: '-' }}</span></div>
                         </div>
                     </div>
 
                     {{-- Diagnoses Summary --}}
                     @if(!empty($selectedDiagnoses))
                         <div class="p-4 rounded-xl bg-surface-50/50 dark:bg-surface-800/50 border border-surface-200 dark:border-white/5 shadow-sm dark:shadow-none">
-                            <h4 class="text-xs font-black uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Diagnosis</h4>
+                            <h4 class="text-xs font-black uppercase tracking-wider text-surface-500 dark:text-surface-200 mb-3">Diagnosis</h4>
                             <div class="space-y-1.5">
                                 @foreach($selectedDiagnoses as $diag)
                                     <div class="flex items-center gap-2 text-sm">
                                         <span
-                                            class="px-1.5 py-0.5 rounded text-[10px] font-bold {{ $diag['type'] === 'primary' ? 'bg-accent-100 dark:bg-accent-500/10 text-accent-700 dark:text-accent-400' : 'bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-400' }}">{{ $diag['type'] === 'primary' ? 'P' : 'S' }}</span>
+                                            class="px-1.5 py-0.5 rounded text-[10px] font-bold {{ $diag['type'] === 'primary' ? 'bg-accent-100 dark:bg-accent-500/10 text-accent-700 dark:text-accent-400' : 'bg-surface-200 dark:bg-surface-700 text-surface-700 dark:text-surface-200' }}">{{ $diag['type'] === 'primary' ? 'P' : 'S' }}</span>
                                         <span class="font-mono font-bold text-primary-700 dark:text-primary-400">{{ $diag['code'] }}</span>
                                         <span class="font-medium text-surface-900 dark:text-surface-300">{{ $diag['name'] }}</span>
                                     </div>
@@ -486,24 +486,24 @@
                     {{-- Billing Summary --}}
                     <div
                         class="p-4 rounded-xl bg-gradient-to-r from-primary-50 to-accent-50 dark:from-primary-500/5 dark:to-accent-500/5 border border-primary-200 dark:border-primary-500/10 shadow-sm dark:shadow-none">
-                        <h4 class="text-xs font-black uppercase tracking-wider text-surface-500 dark:text-surface-400 mb-3">Rincian Biaya</h4>
+                        <h4 class="text-xs font-black uppercase tracking-wider text-surface-500 dark:text-surface-200 mb-3">Rincian Biaya</h4>
                         <div class="space-y-1.5 text-sm">
                             @foreach($selectedServices as $item)
                                 <div class="flex justify-between">
-                                    <span class="font-medium text-surface-600 dark:text-surface-400">{{ $item['name'] }}</span>
-                                    <span class="font-bold text-surface-900 dark:text-surface-200">Rp
+                                    <span class="font-medium text-surface-600 dark:text-surface-200">{{ $item['name'] }}</span>
+                                    <span class="font-bold text-surface-900 dark:text-white">Rp
                                         {{ number_format($item['price'], 0, ',', '.') }}</span>
                                 </div>
                             @endforeach
                             @foreach($prescriptionItems as $item)
                                 <div class="flex justify-between">
-                                    <span class="font-medium text-surface-600 dark:text-surface-400">{{ $item['drug_name'] }} × {{ $item['qty'] }}</span>
-                                    <span class="font-bold text-surface-900 dark:text-surface-200">Rp
+                                    <span class="font-medium text-surface-600 dark:text-surface-200">{{ $item['drug_name'] }} × {{ $item['qty'] }}</span>
+                                    <span class="font-bold text-surface-900 dark:text-white">Rp
                                         {{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}</span>
                                 </div>
                             @endforeach
                             <div class="border-t border-primary-200 dark:border-white/10 pt-2 mt-2 flex justify-between">
-                                <span class="font-black text-surface-900 dark:text-surface-200">Total</span>
+                                <span class="font-black text-surface-900 dark:text-white">Total</span>
                                 <span
                                     class="text-xl font-black bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 bg-clip-text text-transparent">
                                     Rp {{ number_format($this->totalBilling, 0, ',', '.') }}
@@ -551,7 +551,7 @@
                 <div class="px-6 py-4 flex items-center justify-between border-b border-surface-200 dark:border-white/10 bg-surface-50 dark:bg-surface-900/50">
                     <div>
                         <h3 class="text-lg font-bold text-surface-900 dark:text-white">Kamus ICD-10</h3>
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-500">Cari dan pilih diagnosis resmi (WHO)</p>
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-300">Cari dan pilih diagnosis resmi (WHO)</p>
                     </div>
                     <button wire:click="$set('showIcdModal', false)" class="text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors bg-surface-100 dark:bg-surface-800 p-2 rounded-full hover:bg-surface-200 dark:hover:bg-surface-700">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -568,7 +568,7 @@
                             </svg>
                         </span>
                         <input type="text" wire:model.live.debounce.500ms="icdModalSearch" placeholder="Cari kode (J06) atau nama penyakit (Respiratory)..."
-                            class="w-full pl-10 pr-4 py-3 bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all font-medium placeholder-surface-400 dark:placeholder-surface-600">
+                            class="w-full pl-10 pr-4 py-3 bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all font-medium placeholder-surface-400 dark:placeholder-surface-600">
                     </div>
                 </div>
 
@@ -583,7 +583,7 @@
                                                     {{ $icd['code'] }}
                                                 </div>
                                                 <div>
-                                                    <p class="text-sm font-bold text-surface-900 dark:text-surface-200">{{ $icd['name_id'] ?: $icd['name_en'] }}</p>
+                                                    <p class="text-sm font-bold text-surface-900 dark:text-white">{{ $icd['name_id'] ?: $icd['name_en'] }}</p>
                                                     @if($icd['name_id'] && $icd['name_en'])
                                                         <p class="text-xs font-medium text-surface-500 italic">{{ $icd['name_en'] }}</p>
                                                     @endif
@@ -631,7 +631,7 @@
                 <div class="px-6 py-4 flex items-center justify-between border-b border-surface-200 dark:border-white/10 bg-surface-50 dark:bg-surface-900/50">
                     <div>
                         <h3 class="text-lg font-bold text-surface-900 dark:text-white">Pilih Tindakan / Jasa Medis</h3>
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-500">Cari layanan kesehatan dan tindakan medis</p>
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-300">Cari layanan kesehatan dan tindakan medis</p>
                     </div>
                     <button wire:click="$set('showServiceModal', false)" class="text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors bg-surface-100 dark:bg-surface-800 p-2 rounded-full hover:bg-surface-200 dark:hover:bg-surface-700">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -648,7 +648,7 @@
                             </svg>
                         </span>
                         <input type="text" wire:model.live.debounce.500ms="serviceModalSearch" placeholder="Cari nama tindakan/jasa..."
-                            class="w-full pl-10 pr-4 py-3 bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all font-medium placeholder-surface-400 dark:placeholder-surface-600">
+                            class="w-full pl-10 pr-4 py-3 bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all font-medium placeholder-surface-400 dark:placeholder-surface-600">
                     </div>
                 </div>
 
@@ -659,7 +659,7 @@
                                 @foreach($serviceModalResults as $srv)
                                     <div class="group flex items-center justify-between p-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800/80 transition-all border border-transparent hover:border-surface-200 dark:hover:border-white/5">
                                         <div class="flex flex-col gap-0.5 flex-1">
-                                            <p class="text-sm font-bold text-surface-900 dark:text-surface-200">{{ $srv['name'] }}</p>
+                                            <p class="text-sm font-bold text-surface-900 dark:text-white">{{ $srv['name'] }}</p>
                                             <p class="text-xs font-black text-accent-600 dark:text-accent-400">Rp {{ number_format($srv['price'], 0, ',', '.') }}</p>
                                         </div>
                                         @php
@@ -695,7 +695,7 @@
                 <div class="px-6 py-4 flex items-center justify-between border-b border-surface-200 dark:border-white/10 bg-surface-50 dark:bg-surface-900/50">
                     <div>
                         <h3 class="text-lg font-bold text-surface-900 dark:text-white">Pilih Obat (Farmasi)</h3>
-                        <p class="text-sm font-medium text-surface-600 dark:text-surface-500">Cari dan tambahkan obat ke dalam resep</p>
+                        <p class="text-sm font-medium text-surface-600 dark:text-surface-300">Cari dan tambahkan obat ke dalam resep</p>
                     </div>
                     <button wire:click="$set('showMedicineModal', false)" class="text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors bg-surface-100 dark:bg-surface-800 p-2 rounded-full hover:bg-surface-200 dark:hover:bg-surface-700">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -712,7 +712,7 @@
                             </svg>
                         </span>
                         <input type="text" wire:model.live.debounce.500ms="medicineModalSearch" placeholder="Cari nama obat atau generik..."
-                            class="w-full pl-10 pr-4 py-3 bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-surface-200 text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all font-medium placeholder-surface-400 dark:placeholder-surface-600">
+                            class="w-full pl-10 pr-4 py-3 bg-white dark:bg-surface-900 border border-surface-200 dark:border-white/10 rounded-xl text-surface-900 dark:text-white text-sm focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all font-medium placeholder-surface-400 dark:placeholder-surface-600">
                     </div>
                 </div>
 
@@ -723,7 +723,7 @@
                                 @foreach($medicineModalResults as $med)
                                     <div class="group flex items-center justify-between p-3 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800/80 transition-all border border-transparent hover:border-surface-200 dark:hover:border-white/5">
                                         <div class="flex flex-col gap-0.5 flex-1">
-                                            <p class="text-sm font-bold text-surface-900 dark:text-surface-200">{{ $med['name'] }}</p>
+                                            <p class="text-sm font-bold text-surface-900 dark:text-white">{{ $med['name'] }}</p>
                                             <p class="text-xs font-semibold text-surface-500">{{ $med['category'] }} · {{ $med['unit'] }}</p>
                                         </div>
                                         <div class="text-right flex items-center gap-4">
@@ -754,3 +754,4 @@
         </div>
     @endif
 </div>
+

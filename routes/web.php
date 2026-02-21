@@ -70,6 +70,7 @@ Route::prefix('admin')
         Route::get('/deposit', Admin\DepositManager::class)->name('deposit');
         Route::get('/subscription', Admin\SubscriptionManager::class)->name('subscription');
         Route::get('/satusehat', Admin\SatuSehatSettings::class)->name('satusehat');
+        Route::get('/satusehat-logs', Admin\SatuSehatLogManager::class)->name('satusehat.logs');
     });
 
 // ============================================

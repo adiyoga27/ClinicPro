@@ -48,8 +48,8 @@
             <template x-for="option in filteredOptions" :key="option.value">
                 <li>
                     <button type="button" @click="selectOption(option.value)"
-                        class="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
-                        :class="selected == option.value ? 'bg-primary-50 text-primary-700 dark:bg-primary-500/10 dark:text-primary-400 font-medium' : 'text-surface-700 dark:text-surface-300'">
+                        class="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-700 dark:text-white"
+                        :class="selected == option.value ? 'bg-primary-50 !text-primary-700 dark:bg-primary-500/10 dark:!text-primary-400 font-medium' : ''">
                         <span x-text="option.label"></span>
                     </button>
                 </li>

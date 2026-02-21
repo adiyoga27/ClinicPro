@@ -57,6 +57,14 @@ class PatientExamination extends Component
     public $serviceSearch = '';
     public $selectedServices = [];
 
+    public $showServiceModal = false;
+    public $serviceModalSearch = '';
+    public $serviceModalResults = [];
+
+    public $showMedicineModal = false;
+    public $medicineModalSearch = '';
+    public $medicineModalResults = [];
+
     // Computed
 
     public function mount(ClinicQueue $queue)
@@ -254,6 +262,36 @@ class PatientExamination extends Component
         $this->showIcdModal = true;
     }
 
+    // Medicine Modal Methods
+    public function searchMedicineModal()
+    {
+        if (strlen($this->medicineModalSearch) < 2) {
+            $this->medicineModalResults = [];
+            return;
+        }
+
+        $this->medicineModalResults = Medicine::where('clinic_id', auth()->user()->clinic_id)
+            ->active()
+            ->where(function ($q) {
+                $q->where('name', 'like', "%{$this->medicineModalSearch}%")
+                    ->orWhere('generic_name', 'like', "%{$this->medicineModalSearch}%");
+            })
+            ->limit(50)
+            ->get()->toArray();
+    }
+
+    public function updatedMedicineModalSearch()
+    {
+        $this->searchMedicineModal();
+    }
+
+    public function openMedicineModal()
+    {
+        $this->medicineModalSearch = '';
+        $this->medicineModalResults = [];
+        $this->showMedicineModal = true;
+    }
+
     // Medicine Search
     public function getMedicineResultsProperty()
     {
@@ -312,6 +350,33 @@ class PatientExamination extends Component
             $this->prescriptionItems[$index]['qty'] = max(1, (int) $qty);
             $this->saveDraft();
         }
+    }
+
+    // Service Modal Methods
+    public function searchServiceModal()
+    {
+        if (strlen($this->serviceModalSearch) < 2) {
+            $this->serviceModalResults = [];
+            return;
+        }
+
+        $this->serviceModalResults = \App\Models\Service::where('clinic_id', auth()->user()->clinic_id)
+            ->active()
+            ->where('name', 'like', "%{$this->serviceModalSearch}%")
+            ->limit(50)
+            ->get()->toArray();
+    }
+
+    public function updatedServiceModalSearch()
+    {
+        $this->searchServiceModal();
+    }
+
+    public function openServiceModal()
+    {
+        $this->serviceModalSearch = '';
+        $this->serviceModalResults = [];
+        $this->showServiceModal = true;
     }
 
     // Service Search

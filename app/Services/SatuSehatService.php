@@ -23,9 +23,9 @@ class SatuSehatService
         // fallback to config (even though it's empty) for safety.
         $clinic = auth()->check() ? auth()->user()->clinic : null;
         
-        $this->clientId = $clinic?->satusehat_client_id ?? config('satu_sehat.client_id', '');
-        $this->clientSecret = $clinic?->satusehat_client_secret ?? config('satu_sehat.client_secret', '');
-        $this->organizationId = $clinic?->satusehat_organization_id ?? config('satu_sehat.organization_id', '');
+        $this->clientId = (string) ($clinic?->satusehat_client_id ?? config('satu_sehat.client_id') ?? '');
+        $this->clientSecret = (string) ($clinic?->satusehat_client_secret ?? config('satu_sehat.client_secret') ?? '');
+        $this->organizationId = (string) ($clinic?->satusehat_organization_id ?? config('satu_sehat.organization_id') ?? '');
     }
 
     public function getOrganizationId(): string
@@ -75,9 +75,11 @@ class SatuSehatService
 
         $url = $this->baseUrl . '/fhir-r4/v1' . ($resourceType ? '/' . $resourceType : '');
 
+        // Explicitly json_encode the payload since we are using a custom content-type 
+        // to prevent Laravel from sending it in a wrong format
         $response = Http::withToken($token)
-            ->withHeaders(['Content-Type' => 'application/fhir+json'])
-            ->post($url, $payload);
+            ->withBody(json_encode($payload, JSON_UNESCAPED_SLASHES), 'application/fhir+json')
+            ->post($url);
 
         if ($response->successful()) {
             return [
@@ -306,7 +308,7 @@ class SatuSehatService
 
             $diagnoses[] = [
                 'condition' => [
-                    'reference' => $reference,
+                    // 'reference' => $reference,
                     'display' => $diagnosis->icd10Code->name_en ?? 'Diagnosis'
                 ],
                 'use' => [
@@ -397,8 +399,10 @@ class SatuSehatService
     /**
      * Build FHIR Condition (Diagnosis) resource.
      */
-    public function buildConditionResource($diagnosis, string $encounterReference): array
+    public function buildConditionResource($diagnosis, string $encounterReference, string $patientId = null): array
     {
+        $patientId = $patientId ?? ($diagnosis->medicalRecord->patient->satu_sehat_id ?? '');
+        
         return [
             'resourceType' => 'Condition',
             'clinicalStatus' => [
@@ -431,7 +435,7 @@ class SatuSehatService
                 ],
             ],
             'subject' => [
-                'reference' => 'Patient/' . ($diagnosis->medicalRecord->patient->satu_sehat_id ?? ''),
+                'reference' => 'Patient/' . $patientId,
             ],
             'encounter' => [
                 'reference' => str_starts_with($encounterReference, 'urn:uuid:') ? $encounterReference : 'Encounter/' . $encounterReference,
@@ -499,21 +503,10 @@ class SatuSehatService
             'entry' => []
         ];
 
-        // Encounter Entry
-        $encounterPayload = $this->buildEncounterResource($medicalRecord, $conditionUuids);
-        $bundle['entry'][] = [
-            'fullUrl' => 'urn:uuid:' . $encounterUuid,
-            'resource' => $encounterPayload,
-            'request' => [
-                'method' => 'POST',
-                'url' => 'Encounter'
-            ]
-        ];
-
-        // Condition Entries
+        // Condition Entries FIRST (to avoid HAPI FHIR crash with circular refs)
         foreach ($medicalRecord->diagnoses as $diagnosis) {
             $conditionId = $conditionUuids[$diagnosis->id];
-            $conditionPayload = $this->buildConditionResource($diagnosis, 'urn:uuid:' . $encounterUuid);
+            $conditionPayload = $this->buildConditionResource($diagnosis, 'urn:uuid:' . $encounterUuid, $patient->satu_sehat_id);
             $bundle['entry'][] = [
                 'fullUrl' => 'urn:uuid:' . $conditionId,
                 'resource' => $conditionPayload,
@@ -523,6 +516,17 @@ class SatuSehatService
                 ]
             ];
         }
+
+        // Encounter Entry AFTER Conditions
+        $encounterPayload = $this->buildEncounterResource($medicalRecord, $conditionUuids);
+        $bundle['entry'][] = [
+            'fullUrl' => 'urn:uuid:' . $encounterUuid,
+            'resource' => $encounterPayload,
+            'request' => [
+                'method' => 'POST',
+                'url' => 'Encounter'
+            ]
+        ];
 
         // 3. Send Bundle
         $bundleResult = $this->sendResource('', $bundle); // Empty string for base URL /fhir-r4/v1

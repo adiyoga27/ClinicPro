@@ -1,0 +1,194 @@
+{
+    "resourceType": "Bundle",
+    "type": "transaction",
+    "entry": [
+        {
+            "fullUrl": "urn:uuid:0e1063a4-fe47-404b-8942-dc3c45b7b6c7",
+            "resource": {
+                "resourceType": "Encounter",
+                "identifier": [
+                    {
+                        "system": "http://sys-ids.kemkes.go.id/encounter/857d024c-04c1-4672-a7b0-1fb1e11ddc1e",
+                        "value": "ENC-2"
+                    }
+                ],
+                "status": "finished",
+                "statusHistory": [
+                    {
+                        "status": "arrived",
+                        "period": {
+                            "start": "2026-02-21T18:19:25+00:00",
+                            "end": "2026-02-21T18:24:25+00:00"
+                        }
+                    },
+                    {
+                        "status": "in-progress",
+                        "period": {
+                            "start": "2026-02-21T18:24:25+00:00",
+                            "end": "2026-02-21T18:39:25+00:00"
+                        }
+                    },
+                    {
+                        "status": "finished",
+                        "period": {
+                            "start": "2026-02-21T18:39:25+00:00",
+                            "end": "2026-02-21T18:49:25+00:00"
+                        }
+                    }
+                ],
+                "class": {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                    "code": "AMB",
+                    "display": "ambulatory"
+                },
+                "subject": {
+                    "reference": "Patient/",
+                    "display": "Galih Prasasta"
+                },
+                "period": {
+                    "start": "2026-02-21T18:19:25+00:00",
+                    "end": "2026-02-21T18:49:25+00:00"
+                },
+                "serviceProvider": {
+                    "reference": "Organization/857d024c-04c1-4672-a7b0-1fb1e11ddc1e"
+                },
+                "location": [
+                    {
+                        "location": {
+                            "reference": "Location/43852f41-a0b2-46fd-9eea-5c1cf34715ce",
+                            "display": "Poli Umum"
+                        }
+                    }
+                ],
+                "diagnosis": [
+                    {
+                        "condition": {
+                            "reference": "urn:uuid:65358664-8c95-4ba3-b793-58bf83452047",
+                            "display": "Adenoviral encephalitis"
+                        },
+                        "use": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                                    "code": "DD",
+                                    "display": "Discharge diagnosis"
+                                }
+                            ]
+                        },
+                        "rank": 1
+                    },
+                    {
+                        "condition": {
+                            "reference": "urn:uuid:6ed18492-7384-4b9e-be26-01ca101a76b7",
+                            "display": "Tuberculosis of adrenal glands"
+                        },
+                        "use": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                                    "code": "DD",
+                                    "display": "Discharge diagnosis"
+                                }
+                            ]
+                        },
+                        "rank": 2
+                    }
+                ]
+            },
+            "request": {
+                "method": "POST",
+                "url": "Encounter"
+            }
+        },
+        {
+            "fullUrl": "urn:uuid:65358664-8c95-4ba3-b793-58bf83452047",
+            "resource": {
+                "resourceType": "Condition",
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ]
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10",
+                            "code": "A85.1",
+                            "display": "Adenoviral encephalitis"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/"
+                },
+                "encounter": {
+                    "reference": "urn:uuid:0e1063a4-fe47-404b-8942-dc3c45b7b6c7"
+                }
+            },
+            "request": {
+                "method": "POST",
+                "url": "Condition"
+            }
+        },
+        {
+            "fullUrl": "urn:uuid:6ed18492-7384-4b9e-be26-01ca101a76b7",
+            "resource": {
+                "resourceType": "Condition",
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ]
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10",
+                            "code": "A18.7",
+                            "display": "Tuberculosis of adrenal glands"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/"
+                },
+                "encounter": {
+                    "reference": "urn:uuid:0e1063a4-fe47-404b-8942-dc3c45b7b6c7"
+                }
+            },
+            "request": {
+                "method": "POST",
+                "url": "Condition"
+            }
+        }
+    ]
+}
